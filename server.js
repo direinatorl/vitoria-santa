@@ -10,7 +10,15 @@ const host = process.env.HOST || '127.0.0.1';
 const siteUrl = (process.env.SITE_URL || `http://localhost:${port}`).replace(/\/$/, '');
 const origin = new URL(siteUrl).origin;
 const publicDir = fileURLToPath(new URL('./public/', import.meta.url));
-const db = openDatabase(process.env.DATABASE_PATH || './data/contacts.sqlite');
+const databasePath = resolve(process.env.DATABASE_PATH || './data/contacts.sqlite');
+if (databasePath.startsWith(resolve(publicDir) + sep)) throw new Error('DATABASE_PATH deve ficar fora de public/.');
+const db = openDatabase(databasePath);
+// Development loopback aliases share the same application; production remains exact-origin.
+const allowedOrigins = new Set([origin]);
+const localUrl = new URL(origin);
+if (localUrl.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(localUrl.hostname)) {
+  for (const hostname of ['localhost', '127.0.0.1', '[::1]']) allowedOrigins.add(`http://${hostname}${localUrl.port ? ':' + localUrl.port : ''}`);
+}
 const buckets = new Map();
 const windowMs = 15 * 60 * 1000;
 const cleanup = setInterval(() => { const now = Date.now(); for (const [key, value] of buckets) if (now > value.until) buckets.delete(key); }, 60000);
@@ -35,11 +43,11 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, origin);
     if (url.pathname === '/api/leads') {
       if (req.method !== 'POST') return send(res, 405, { message: 'Método não permitido.' }, undefined, { Allow: 'POST' });
-      if (req.headers.origin !== origin) return send(res, 403, { message: 'Origem não autorizada. Atualize a página.' });
+      if (!allowedOrigins.has(req.headers.origin)) return send(res, 403, { message: 'Origem não autorizada. Atualize a página.' });
       if (!rateLimit(req.socket.remoteAddress)) return send(res, 429, { message: 'Muitos envios. Aguarde 15 minutos ou fale pelo WhatsApp.' }, undefined, { 'Retry-After': '900' });
       if (!/^application\/json(?:;|$)/i.test(req.headers['content-type'] || '')) return send(res, 415, { message: 'Formato não aceito.' });
       const chunks = []; let size = 0;
-      for await (const chunk of req) {
+      for await (const chunk of req.iterator({ destroyOnReturn: false })) {
         size += chunk.length;
         if (size > 16384) { send(res, 413, { message: 'Solicitação muito grande.' }); req.resume(); return; }
         chunks.push(chunk);
@@ -65,7 +73,9 @@ const server = http.createServer(async (req, res) => {
       catch { return send(res, 404, { message: 'Arquivo não encontrado.' }); }
     }
     const path = url.pathname === '/' ? '/' : url.pathname.replace(/\/$/, '');
-    send(res, routes[path] ? 200 : 404, req.method === 'HEAD' ? '' : renderPage(path, siteUrl), 'text/html; charset=utf-8');
+    const exists = Object.hasOwn(routes, path);
+    if (exists && path !== url.pathname) return send(res, 308, '', 'text/plain', { Location: path + url.search });
+    send(res, exists ? 200 : 404, req.method === 'HEAD' ? '' : renderPage(path, siteUrl), 'text/html; charset=utf-8');
   } catch (error) {
     console.error('Falha no processamento:', error.code || error.name || 'UnknownError');
     if (!res.headersSent) send(res, 500, { message: 'Não foi possível processar o pedido. Tente novamente ou utilize o WhatsApp.' });

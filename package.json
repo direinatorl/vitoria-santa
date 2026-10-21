@@ -1,6 +1,6 @@
 {
   "name": "vitoria-santa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Site institucional da Vitória Santa — consórcios e planos de saúde",
@@ -9,6 +9,7 @@
     "start": "node --env-file-if-exists=.env server.js",
     "dev": "node --watch --env-file-if-exists=.env server.js",
     "test": "node --test",
-    "check": "node --check server.js && node --check src/pages.js && node --check src/leads.js && node --check public/app.js"
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs"
   }
 }

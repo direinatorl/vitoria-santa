@@ -7,6 +7,7 @@ export function openDatabase(path) {
   mkdirSync(dirname(resolve(path)), { recursive: true });
   const db = new DatabaseSync(path);
   db.exec(`PRAGMA journal_mode=WAL;
+    PRAGMA busy_timeout=5000;
     CREATE TABLE IF NOT EXISTS leads (
       id INTEGER PRIMARY KEY, request_id TEXT UNIQUE NOT NULL, fingerprint TEXT NOT NULL,
       service TEXT NOT NULL, created_at TEXT NOT NULL, name TEXT NOT NULL,
@@ -21,17 +22,18 @@ export function validateLead(raw) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { errors: { form: 'Dados inválidos.' } };
   const service = clean(raw.service);
   const name = clean(raw.name);
-  const phone = clean(raw.phone).replace(/\D/g, '');
+  const phoneInput = clean(raw.phone);
+  const phone = phoneInput.replace(/\D/g, '');
   const email = clean(raw.email).toLowerCase();
   const message = clean(raw.message);
   if (!['consorcios', 'saude', 'contato'].includes(service)) errors.service = 'Selecione um serviço válido.';
   if (name.length < 2 || name.length > 100) errors.name = 'Informe seu nome, entre 2 e 100 caracteres.';
-  if (!/^(?:55)?[1-9]{2}\d{8,9}$/.test(phone)) errors.phone = 'Informe telefone com DDD, de 10 ou 11 dígitos.';
+  if (!/^[\d()+.\s-]+$/.test(phoneInput) || !/^(?:55)?[1-9]{2}\d{8,9}$/.test(phone)) errors.phone = 'Informe telefone com DDD, de 10 ou 11 dígitos.';
   if (email && (email.length > 180 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) errors.email = 'Informe um e-mail válido.';
   if (message.length > 1000) errors.message = 'Use até 1.000 caracteres.';
   if (raw.consent !== true) errors.consent = 'Autorize o uso dos dados para este atendimento.';
   if (clean(raw.website)) errors.form = 'Não foi possível enviar. Entre em contato pelos canais oficiais.';
-  if (!/^[a-f0-9-]{36}$/i.test(clean(raw.requestId))) errors.form = 'Atualize a página e tente novamente.';
+  if (!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(clean(raw.requestId))) errors.form = 'Atualize a página e tente novamente.';
   const details = { message };
   if (service === 'consorcios') {
     details.asset = clean(raw.asset);
