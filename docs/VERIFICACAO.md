@@ -1,35 +1,41 @@
-# Verificação da primeira versão
+# Verificação da revisão profissional
 
 Executada em 21/10/2026, com Node.js 24.19.0.
 
-## Resultado automatizado
+## Auditoria e melhorias
 
-`node --test`: **8 testes passaram, 0 falharam**.
+- Preservada a aplicação Node.js/SQLite existente e os commits feitos durante a revisão.
+- Início reformulado com duas chamadas claras para os serviços e imagens ilustrativas locais.
+- Páginas de consórcios e saúde com apresentações visuais próprias, opções de interesse, informações de comparação, FAQ e atendimento.
+- Separação de empresa e contato, com navegação e metadados específicos.
+- Componentes, formulários e conteúdo separados em módulos legíveis.
+- Menu móvel, rótulos explícitos de formulário, mensagens por campo, foco e preenchimento da modalidade a partir da escolha na página.
+- Corrigido cache de estilos/scripts com versionamento de URLs.
+- Servidor com aliases de origem apenas no desenvolvimento local, verificação de UUID v4, rejeição de telefone contendo letras, limite de corpo com resposta estruturada e proteção contra banco dentro da pasta pública.
+- Build por lista de arquivos permitidos, sem dados nem segredos, e teste de execução do artefato.
+- Exportação de páginas HTML para corrigir a publicação existente do GitHub Pages, que exibia o README.
 
-- Páginas, metadados, links internos, assets, sitemap, robots e 404.
-- Validação de campos, telefone, e-mail, consentimento, modalidades e honeypot.
-- Pedido inválido rejeitado sem persistência.
-- Persistência real dos três serviços, normalização, reenvio idempotente e conflito de identificador.
-- Bloqueio de origem externa, método e formato incorretos.
-- Limite de tentativas com resposta 429.
-- Conteúdo potencialmente malicioso tratado como dado e persistência após reabertura do banco.
-- WhatsApp com número e mensagens contextuais.
+## Verificações executadas
 
-Verificações de sintaxe executadas com `node --check` em `server.js`, `src/pages.js`, `src/leads.js` e `public/app.js`: concluídas sem erro. Não há compilação nem dependências de build.
+- `node scripts/check.mjs`: sintaxe de 8 arquivos verificada.
+- `node scripts/build.mjs`: pacote de produção gerado em `dist/`.
+- `node scripts/smoke.mjs`: pacote iniciado na porta 3099; página, imagem, envio e persistência em banco temporário confirmados.
+- `node --test`: suíte de 13 testes para HTTP, validação, persistência, idempotência, abuso, navegação, assets, WhatsApp e exportação estática.
+- `node scripts/export-pages.mjs --check`: exportação comparada com os componentes atuais.
+- `git diff --check`: sem erros de whitespace; avisos locais de conversão LF/CRLF não afetam a execução.
 
-## Verificação no navegador
+## Navegador
 
-- Página inicial inspecionada em desktop e em viewport móvel de 390 × 844.
-- Menu móvel aberto e navegação para consórcios confirmada.
-- FAQ de contemplação expandida e texto verificado.
-- Formulário de consórcio enviado com dados fictícios: confirmação com protocolo 1.
-- Formulário de saúde enviado com dados fictícios: confirmação com protocolo 2.
-- Formulário de saúde sem transbordamento horizontal na viewport móvel.
-- Ajuste de quebra de linha em título móvel aplicado após inspeção.
-- Retorno à página inicial e inspeção em 1366 × 900.
+As seis páginas foram abertas em larguras de **360, 768, 1024 e 1440 pixels**: sem transbordamento horizontal, um título principal por página e nenhuma imagem quebrada detectada. Inspeção visual do início, consórcios, contato e formulários em desktop, tablet e celular.
 
-Os testes HTTP usam base temporária e não afetam os contatos reais. Os envios manuais no navegador foram realizados somente no ambiente local, sem mensagens externas. Nenhum contato de WhatsApp, e-mail ou rede social recebeu mensagem.
+Menu móvel aberto e navegação confirmada. Seleção de veículo e de modalidade empresarial transferidas aos respectivos formulários. Envios vazios e e-mail inválido rejeitados na interface; os três serviços tiveram envio com dados fictícios e confirmação real por protocolo no ambiente local. O console das páginas inspecionadas não apresentou erros ou avisos.
 
-## Limites
+Os testes automatizados usam bases temporárias. Os dados fictícios de testes manuais são removidos do banco local ao concluir a conferência. Nenhuma mensagem foi enviada a terceiros por WhatsApp, e-mail ou redes sociais.
 
-Não houve deploy, envio ao GitHub remoto, teste de recebimento por uma equipe comercial, auditoria jurídica, nem verificação de atendimento real dos canais publicados. A atualidade comercial dos dados, o tratamento operacional dos leads, o HTTPS e a infraestrutura persistente devem ser confirmados antes da publicação conforme `PUBLICACAO.md`.
+## Publicação e limites
+
+O repositório público confirmado é https://github.com/direinatorl/vitoria-santa, com branch principal `main`. O GitHub Pages existente usa o endereço https://direinatorl.github.io/vitoria-santa/.
+
+O Pages serve a interface estática com atendimento por WhatsApp, telefone e e-mail. Não recebe formulários nem executa Node/SQLite. O back-end completo continua disponível no projeto e necessita de hospedagem compatível para uso público. Não houve migração de provedor ou alteração do domínio da empresa.
+
+Dados institucionais e oferta comercial dependem de confirmação da corretora; notificações de leads e integração CRM não estão configuradas. O Dockerfile foi preparado, mas não foi testado com Docker nesta estação.

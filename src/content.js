@@ -1,5 +1,5 @@
 export const homeFaq = [
-  ['Como solicito atendimento?', 'Escolha consórcios ou planos de saúde e envie o formulário. Se preferir, abra uma conversa pelo WhatsApp.'],
+  ['Como solicito atendimento?', 'Escolha consórcios ou planos de saúde para conhecer as possibilidades. Você pode iniciar uma conversa pelo WhatsApp ou usar os canais da página de contato.'],
   ['Enviar uma solicitação me obriga a contratar?', 'Não. O pedido inicia uma conversa para entender suas necessidades. A contratação depende da sua decisão e das condições do produto.'],
   ['Quais informações devo enviar?', 'Apenas os dados de contato e o serviço de interesse. Não envie diagnósticos, documentos ou informações médicas neste primeiro contato.'],
 ];
@@ -15,5 +15,5 @@ export const healthFaq = [
   ['Como conferir a rede credenciada?', 'Confira a rede do produto específico, a área de abrangência e os prestadores disponíveis diretamente na documentação atualizada da operadora antes de contratar.'],
   ['Existem carências?', 'Carências, eventual redução e regras de cobertura dependem da modalidade, do produto e das regras aplicáveis. As condições precisam ser confirmadas na proposta e no contrato.'],
   ['O que é coparticipação?', 'É a participação do beneficiário em determinados custos de utilização, conforme as regras e os limites previstos no contrato. Compare essa cobrança com a mensalidade.'],
-  ['Preciso informar meu histórico médico aqui?', 'Não. Este formulário recebe somente dados iniciais de contato. Não envie diagnósticos ou informações sensíveis de saúde.'],
+  ['Preciso informar meu histórico médico aqui?', 'Não. O primeiro contato serve para entender seu interesse. Não envie diagnósticos ou informações sensíveis de saúde.'],
 ];

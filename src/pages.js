@@ -33,7 +33,7 @@ function home() {
   ${finalCta()}`;
 }
 
-function servicePage(service) {
+function servicePage(service, options) {
   const health = service === 'saude';
   const choices = health
     ? [['individual-familiar', 'Você e sua família', 'Conte onde você mora e o que prioriza para consultar alternativas individuais ou familiares.'], ['empresarial', 'Sua empresa', 'Conheça possibilidades de contratação empresarial de acordo com o perfil e a elegibilidade.']]
@@ -56,7 +56,7 @@ function servicePage(service) {
   <section class="comparison-band"><div class="container service-detail"><div><p class="eyebrow">ENTENDA ANTES DE DECIDIR</p><h2>${health ? 'A diferença está<br>nos detalhes.' : 'Como funciona<br>o consórcio?'}</h2><p>${health ? 'Uma boa escolha considera mais do que a mensalidade. Compare as informações do produto específico antes de contratar.' : 'Pessoas de um grupo contribuem para um fundo comum, gerenciado por uma administradora. A contemplação possibilita usar a carta de crédito, conforme as condições contratuais.'}</p><div class="notice">${health ? 'Não há garantia de operadora, rede ou carência nesta página. As condições são confirmadas na proposta e no contrato.' : 'A contemplação ocorre por sorteio ou lance, conforme as regras e os recursos do grupo. Não há promessa de data ou de contemplação imediata.'}</div></div>
     <div class="info-list">${compare.map(([title, text], i) => `<article><span>0${i + 1}</span><div><h3>${title}</h3><p>${text}</p></div></article>`).join('')}</div></div></section>
   <section class="section container faq-layout"><div><p class="eyebrow">PERGUNTAS FREQUENTES</p><h2>Mais clareza.<br>Uma decisão melhor.</h2><p>Condições específicas são verificadas<br>durante o atendimento.</p></div>${faq(health ? healthFaq : consortiumFaq)}</section>
-  ${form(service)}`;
+  ${form(service, options)}`;
 }
 
 function about() {
@@ -67,16 +67,16 @@ function about() {
   ${steps()}${finalCta()}`;
 }
 
-function contact() {
+function contact(options) {
   return `<section class="container page-hero contact-hero"><p class="eyebrow">CONTATO</p><h1>Seus planos merecem<br><em>uma boa conversa.</em></h1><p>Escolha como prefere falar com a Vitória Santa.<br>Estamos aqui para entender o seu próximo passo.</p></section>
     <section class="container contact-grid" aria-label="Canais de atendimento">
       <article><span class="contact-symbol">${icon('whatsapp')}</span><p class="eyebrow">ATENDIMENTO DIRETO</p><h2>Fale com a gente</h2><a class="contact-primary" href="${whatsapp()}" target="_blank" rel="noopener noreferrer">${company.whatsappLabel} ${arrow}</a><p>WhatsApp</p><a href="tel:${company.phoneHref}">Telefone: ${company.phone}</a></article>
-      <article><span class="contact-symbol">@</span><p class="eyebrow">POR E-MAIL</p><h2>Escreva para nós</h2><a class="contact-email" href="mailto:${company.email}">${company.email} ${arrow}</a><p>Ou envie sua solicitação<br>pelo formulário abaixo.</p></article>
+      <article><span class="contact-symbol">@</span><p class="eyebrow">POR E-MAIL</p><h2>Escreva para nós</h2><a class="contact-email" href="mailto:${company.email}">${company.email} ${arrow}</a><p>${options?.staticContact ? 'Conte o que você procura.<br>Vamos orientar o próximo passo.' : 'Ou envie sua solicitação<br>pelo formulário abaixo.'}</p></article>
       <article><span class="contact-symbol">${icon('home')}</span><p class="eyebrow">SÃO PAULO / SP</p><h2>Onde estamos</h2><p>${company.address}</p><a class="text-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}" target="_blank" rel="noopener noreferrer">Ver no mapa ${arrow}</a><p class="small">Confirme a disponibilidade antes de uma visita.</p></article>
-    </section>${form('contato')}`;
+    </section>${form('contato', options)}`;
 }
 
-function privacy() {
+function privacy({ staticContact = false } = {}) {
   const paragraphs = [
     ['Quem recebe seus dados', `A Vitória Santa Corretora recebe as solicitações enviadas neste site. Para informações e pedidos relativos a dados pessoais, escreva para <a href="mailto:${company.email}">${company.email}</a>.`],
     ['Dados e finalidade', 'Coletamos nome, telefone e, se informado, e-mail, além das informações de interesse comercial e da mensagem. Usamos esses dados para responder ao pedido e orientar sobre o serviço escolhido, mediante o consentimento solicitado no formulário. Não solicitamos dados médicos, documentos ou diagnósticos.'],
@@ -85,19 +85,24 @@ function privacy() {
     ['Cookies e serviços externos', 'Este site não utiliza cookies de publicidade, rastreadores ou analytics. Os controles de abuso usam temporariamente o endereço IP em memória por até 15 minutos. Ao acessar WhatsApp, mapas ou redes sociais pelos links, você usa serviços externos com políticas próprias. Imagens e estilos são servidos localmente.'],
     ['Segurança', 'Aplicamos validação de dados e controles de envio. O ambiente de produção deve utilizar HTTPS, acesso restrito ao banco e cópias de segurança protegidas. Não envie informações sensíveis no campo de mensagem.'],
   ];
+  if (staticContact) paragraphs.splice(1, 2,
+    ['Contato pelo WhatsApp', 'Nesta versão do site, o atendimento começa pelos links de WhatsApp, telefone e e-mail. Não há formulário de coleta ou banco de contatos nesta hospedagem. Os dados que você decidir enviar à equipe serão usados para atender ao seu pedido. Não envie diagnósticos ou informações sensíveis na primeira conversa.'],
+    ['Serviços externos e hospedagem', 'Ao clicar em um canal de contato, você acessa um serviço externo, sujeito a seus próprios termos e políticas. O GitHub Pages hospeda estas páginas e pode tratar dados técnicos de acesso conforme suas políticas. Não utilizamos publicidade, rastreadores ou analytics próprios. As imagens são servidas pela hospedagem.']);
+  if (staticContact) paragraphs.splice(4, 1, ['Cookies e navegação', 'Este site não grava cookies de publicidade nem envia formulários. Os canais externos podem utilizar recursos próprios. Consulte suas políticas ao acessá-los.']);
+  if (staticContact) paragraphs[5] = ['Segurança no contato', 'Utilize os canais indicados nesta página para falar com a equipe. Evite enviar informações sensíveis na conversa inicial. As informações de uma eventual proposta devem ser tratadas pelos canais adequados durante o atendimento.'];
   return `<article class="container legal section"><p class="eyebrow">TRANSPARÊNCIA</p><h1>Política de Privacidade</h1><p class="small">Versão de 21 de outubro de 2026.</p>${paragraphs.map(([title, text]) => `<h2>${title}</h2><p>${text}</p>`).join('')}<a class="text-link" href="/contato">Entrar em contato ${arrow}</a></article>`;
 }
 
 export const routes = Object.assign(Object.create(null), {
   '/': { title: 'Consórcios e planos de saúde', description: 'Consórcios para suas conquistas e planos de saúde para cuidar de quem importa. Conte com a orientação da Vitória Santa Corretora.', render: home },
-  '/consorcios': { title: 'Consórcios de imóveis e veículos', description: 'Entenda o consórcio, os sorteios, lances e custos. Solicite orientação para planejar sua aquisição com a Vitória Santa.', image: 'casa', render: () => servicePage('consorcios') },
-  '/planos-de-saude': { title: 'Planos de saúde para você e sua empresa', description: 'Consulte opções de planos de saúde para você, sua família e sua empresa. Entenda rede, cobertura e condições com a Vitória Santa.', render: () => servicePage('saude') },
+  '/consorcios': { title: 'Consórcios de imóveis e veículos', description: 'Entenda o consórcio, os sorteios, lances e custos. Solicite orientação para planejar sua aquisição com a Vitória Santa.', image: 'casa', render: (options) => servicePage('consorcios', options) },
+  '/planos-de-saude': { title: 'Planos de saúde para você e sua empresa', description: 'Consulte opções de planos de saúde para você, sua família e sua empresa. Entenda rede, cobertura e condições com a Vitória Santa.', render: (options) => servicePage('saude', options) },
   '/sobre': { title: 'Conheça a Vitória Santa Corretora', description: 'Atendimento personalizado, orientação na escolha e suporte pós-venda. Conheça a proposta da Vitória Santa Corretora.', render: about },
   '/contato': { title: 'Contato e atendimento', description: 'Fale com a Vitória Santa por WhatsApp, telefone, e-mail ou formulário. Atendimento para consórcios e planos de saúde em São Paulo.', render: contact },
   '/privacidade': { title: 'Política de Privacidade', description: 'Saiba como os dados de contato são tratados no site da Vitória Santa.', render: privacy },
 });
 
-export function renderPage(path, siteUrl) {
+export function renderPage(path, siteUrl, options = {}) {
   const exists = Object.hasOwn(routes, path);
   const page = exists ? routes[path] : { title: 'Página não encontrada', description: 'Esta página não foi encontrada.', render: () => `<section class="container page-hero error-page"><p class="eyebrow">ERRO 404</p><h1>Vamos voltar<br><em>ao caminho certo?</em></h1><p>A página que você procura não está disponível.</p><a class="button" href="/">Ir para a página inicial ${arrow}</a></section>` };
   const service = path === '/consorcios' ? 'consorcios' : path === '/planos-de-saude' ? 'saude' : 'contato';
@@ -109,6 +114,6 @@ export function renderPage(path, siteUrl) {
     <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="${canonical}">
     <meta property="og:image" content="${escape(siteUrl)}/assets/${page.image || 'cuidado'}.jpg"><meta property="og:image:alt" content="${page.image === 'casa' ? 'Casa ilustrando aquisição planejada' : 'Pessoas reunidas ao ar livre'}">
     <meta name="theme-color" content="#234b3b"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
-    </head><body>${header(path)}<main id="conteudo">${page.render()}</main>${footer(service)}</body></html>`;
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css?v=1.1.0"><script src="/app.js?v=1.1.0" defer></script>
+    </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}</body></html>`;
 }

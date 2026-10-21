@@ -8,7 +8,8 @@ function select(name, label, items) {
   return `<div class="field"><label for="${name}">${label}</label><select name="${name}" id="${name}" required aria-describedby="error-${name}"><option value="">Selecione</option>${items.map(([value, text]) => `<option value="${value}">${text}</option>`).join('')}</select><span id="error-${name}" class="field-error" data-error="${name}"></span></div>`;
 }
 
-export function form(service) {
+export function form(service, { staticContact = false } = {}) {
+  if (staticContact) return `<section class="section form-section" id="solicitar"><div class="container static-contact"><div><p class="eyebrow">ATENDIMENTO PERSONALIZADO</p><h2>Vamos conversar<br>sobre os seus planos?</h2><p>Fale com a Vitória Santa pelo WhatsApp para ${service === 'consorcios' ? 'conhecer as opções de consórcio' : service === 'saude' ? 'solicitar orientação e uma cotação de saúde' : 'solicitar atendimento'}. Conte o que você procura e receba orientação para o próximo passo.</p><p class="small">O contato não representa contratação. Não envie informações sensíveis de saúde nesta primeira conversa.</p></div><div class="static-contact-action">${wa(service, service === 'saude' ? 'Solicitar cotação no WhatsApp' : 'Iniciar conversa no WhatsApp')}<p class="small">Você será direcionado ao WhatsApp.<br>A mensagem só será enviada por você.</p></div></div></section>`;
   const title = service === 'consorcios' ? 'Conte o que você quer conquistar' : service === 'saude' ? 'Vamos falar sobre o seu plano' : 'Como podemos ajudar você?';
   return `<section class="section form-section" id="solicitar"><div class="container form-layout">
     <div class="form-intro"><p class="eyebrow">UM BOM COMEÇO É UMA CONVERSA</p><h2>Vamos cuidar<br>do seu próximo passo.</h2>

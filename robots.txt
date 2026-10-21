@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://direinatorl.github.io/vitoria-santa/sitemap.xml

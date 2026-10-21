@@ -29,13 +29,14 @@ after(async () => {
   rmSync(directory, { recursive: true, force: true });
 });
 test('páginas, metadados, assets e erro 404', async () => {
-  for (const path of ['/', '/consorcios', '/planos-de-saude', '/sobre', '/privacidade']) {
+  for (const path of ['/', '/consorcios', '/planos-de-saude', '/sobre', '/contato', '/privacidade']) {
     const result = await fetch(origin + path); assert.equal(result.status, 200);
     const body = await result.text(); assert.match(body, /lang="pt-BR"/); assert.match(body, /name="description"/); assert.match(body, /aria-label="Navegação principal"/);
     assert.ok(result.headers.get('content-security-policy').includes("frame-ancestors 'none'"));
     for (const [, href] of body.matchAll(/href="(\/(?:[^"#]*))"/g)) {
       const linked = await fetch(origin + href); assert.equal(linked.status, 200, href);
     }
+    for (const [, src] of body.matchAll(/(?:src)="(\/[^"#]*)"/g)) assert.equal((await fetch(origin + src)).status, 200, src);
   }
   for (const path of ['/styles.css','/app.js','/assets/logo.jpg','/assets/familia.jpg','/assets/favicon.svg','/robots.txt','/sitemap.xml']) assert.equal((await fetch(origin + path)).status, 200, path);
   assert.equal((await fetch(origin + '/nao-existe')).status, 404);
@@ -51,6 +52,9 @@ test('validação rejeita campos ausentes, email inválido, spam, modalidades e 
   assert.ok(validateLead({ ...lead('consorcios'), asset: 'invalido' }).errors.asset);
   assert.ok(validateLead({ ...lead(), message: 'x'.repeat(1001) }).errors.message);
   assert.ok(validateLead({ ...lead(), phone: '123' }).errors.phone);
+  assert.ok(validateLead({ ...lead(), phone: 'abc11999990000' }).errors.phone);
+  assert.ok(validateLead({ ...lead(), requestId: '-'.repeat(36) }).errors.form);
+  assert.ok(validateLead({ ...lead('saude'), beneficiaries: '1.5' }).errors.beneficiaries);
 });
 test('API rejeita dados inválidos e não grava registros', async () => {
   const response = await post({ ...lead(), consent: false, phone: '123' });

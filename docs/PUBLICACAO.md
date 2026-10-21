@@ -1,10 +1,26 @@
 # Publicação e operação
 
+## GitHub Pages existente
+
+Endereço: https://direinatorl.github.io/vitoria-santa/. O repositório já tinha Pages e deployments automáticos, mas a ausência de `index.html` fazia a hospedagem mostrar o README como página inicial.
+
+O exportador `node scripts/export-pages.mjs` gera a interface pronta na raiz e nas pastas `consorcios/`, `planos-de-saude/`, `sobre/`, `contato/` e `privacidade/`. `.nojekyll` permite servir esses arquivos diretamente. Os assets são reutilizados de `public/`, com URLs adaptadas ao caminho `/vitoria-santa/`. Inclua os HTMLs gerados no commit e faça push na branch `main`, preservando a publicação existente.
+
+**Nesta hospedagem, o atendimento ocorre por WhatsApp, telefone e e-mail.** Os links abrem uma conversa contextual, mas não enviam mensagens automaticamente. O Pages não possui formulário de coleta nem banco de contatos; sua política de privacidade reflete esse funcionamento. Não há sucesso de envio fictício.
+
+Os formulários e o SQLite permanecem implementados e testados na aplicação Node. Para disponibilizá-los na internet, ainda será necessário um ambiente com Node.js e disco persistente, além de domínio, TLS e variáveis de ambiente. Nenhuma conta foi criada em outro provedor, nem houve troca de hospedagem ou alteração do domínio oficial da corretora.
+
+O workflow `verify.yml` valida testes, exportação, build e execução do artefato de produção. Ele não substitui o workflow já existente do Pages. Confira ambos no GitHub Actions depois do push.
+
 ## Infraestrutura
 
 Use servidor ou contêiner com Node.js 24+, volume persistente para `DATABASE_PATH`, certificado HTTPS e proxy reverso. Este aplicativo possui back-end: hospedagem somente estática, como GitHub Pages, não processa os formulários.
 
 Configure `SITE_URL` com a origem HTTPS final. O servidor compara o cabeçalho `Origin` com esse valor. O proxy deve preservar a origem do navegador. Não use um domínio diferente para o formulário. Configure limite de corpo e tempo de requisição também no proxy. Execute como usuário sem privilégios administrativos.
+
+Em desenvolvimento HTTP local, aliases `localhost`, `127.0.0.1` e `[::1]` na mesma porta são aceitos. Essa exceção não se aplica ao domínio HTTPS de produção. O servidor rejeita a configuração de banco dentro de `public/`.
+
+Para gerar o pacote: `node scripts/build.mjs`. Para verificar sua execução: `node scripts/smoke.mjs`. Para executá-lo: `node --env-file-if-exists=.env dist/server.js`. O `Dockerfile` fornece uma opção de empacotamento; o build Docker não foi executado nesta estação e não configura uma hospedagem.
 
 Restrinja o banco e os backups ao usuário da aplicação e à equipe autorizada. Use criptografia de disco/volume e backups protegidos conforme a infraestrutura escolhida. SQLite armazena dados em arquivo sem criptografia própria nesta implementação. Não coloque o banco em `public/`. Não use armazenamento efêmero. Para backup online, prefira a API de backup do SQLite ou `VACUUM INTO` por ferramenta apropriada; uma cópia simples com o banco em uso pode ignorar o WAL. Teste a restauração antes de depender do backup.
 
@@ -36,6 +52,8 @@ O texto institucional foi reescrito a partir da descrição de atendimento, adeq
 - `public/assets/logo.jpg`: logotipo obtido de https://www.vitoriasanta.com.br/images/logo.jpg para uso no projeto da própria marca.
 - Paleta original observada: verde `#96c040` e azul no logotipo. A interface usa tons verdes mais escuros para legibilidade, verde claro e azul suave como apoio.
 - `public/assets/familia.jpg`: fotografia ilustrativa de https://images.unsplash.com/photo-1511895426328-dc8714191300 (Unsplash), armazenada localmente. Não representa clientes nem depoimento. Confirmar adequação do material e licenciamento para o uso final.
+- `public/assets/cuidado.jpg`: fotografia ilustrativa de pessoas abraçadas, obtida de https://images.unsplash.com/photo-1511632765486-a01980e01a18 (Unsplash). Utilizada no início e na página de saúde, sem representar clientes ou um depoimento.
+- `public/assets/casa.jpg`: fotografia ilustrativa de imóvel, obtida de https://images.unsplash.com/photo-1600585154340-be6161a56a0c (Unsplash). Utilizada em consórcios, sem sugerir oferta de imóvel ou valor de crédito.
 - Favicon em SVG criado para o projeto, sem reproduzir o símbolo da marca.
 
 ## Checklist de entrada em produção
