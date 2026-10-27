@@ -90,7 +90,8 @@ export async function handleChatApi(req, res, dependencies = {}) {
     if (raw.action !== 'question' || typeof raw.message !== 'string' || !raw.message.trim() || raw.message.length > 600) throw fail(422, 'Escreva uma dúvida de até 600 caracteres.');
     // Do not forward identifiers or health disclosures to a language model.
     if (/\d{4}|@|\b(cpf|cnpj|diagn[oó]stico|doen[cç]a|c[aâ]ncer|diabetes|hiv|medicamento|exame|cirurgia)\b/i.test(raw.message)) return reply(200, { message: 'Para proteger seus dados, não encaminhei esta mensagem à IA. Evite documentos, telefone, e-mail ou informações médicas. Para questões específicas, fale com um consultor.', ai: false });
-    const key = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+    // Vercel supplies a fresh OIDC token on each function request at runtime.
+    const key = process.env.AI_GATEWAY_API_KEY || (process.env.VERCEL === '1' ? req.headers['x-vercel-oidc-token'] : undefined) || process.env.VERCEL_OIDC_TOKEN;
     if (!key || !process.env.AI_GATEWAY_MODEL) return reply(200, { message: 'A IA conversacional ainda não está disponível. Orientação geral: ' + knowledge[session.product], ai: false });
     const [prior, insurers, approved] = await Promise.all([
       db(`chat_messages?session_id=eq.${session.id}&select=role,content&order=created_at.desc&limit=8`),
@@ -112,3 +113,4 @@ export async function handleChatApi(req, res, dependencies = {}) {
     return reply(error.status || 503, { message: error.status ? error.message : 'Atendimento temporariamente indisponível. Não confirmamos o registro. Tente novamente ou utilize o WhatsApp.' });
   }
 }
+
