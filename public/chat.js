@@ -33,7 +33,7 @@ function options(items) {
 }
 function consent() {
   state.mode = 'consent';
-  message('assistant', 'Para preparar seu pedido, vamos coletar seus dados de contato e preferências. Com sua autorização, o pedido será enviado à Vitória Santa por uma API na Vercel e armazenado no Supabase por até 50 dias. Dúvidas enviadas à IA são processadas pelo Vercel AI Gateway e seu provedor; não inclua documentos ou dados médicos. O histórico fica nesta aba por até 30 minutos de inatividade. Consulte a Política de Privacidade abaixo. Você autoriza esse atendimento?');
+  message('assistant', 'Para preparar seu pedido, vamos coletar seus dados de contato e preferências.');
   renderControls();
 }
 function start(product, preset) {
