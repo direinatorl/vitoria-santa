@@ -17,7 +17,7 @@ function emit(name, content) {
   } else { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, content); }
 }
 function staticHtml(path) {
-  return renderPage(path, siteUrl, { staticContact: true, chatApi: process.env.CHAT_API_URL || 'https://vitoria-santa.vercel.app' })
+  return renderPage(path, siteUrl, { staticContact: true, chatApi: process.env.CHAT_API_URL || 'https://vitoriasanta.vercel.app' })
     .replaceAll(siteUrl + '/assets/', siteUrl + '/public/assets/')
     .replace(/(href|src)="(\/[^"\s]*)"/g, (_, attribute, target) => {
       const url = new URL(target, 'https://local.invalid');

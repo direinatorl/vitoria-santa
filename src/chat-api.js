@@ -104,6 +104,7 @@ export async function handleChatApi(req, res, dependencies = {}) {
       const response = await (dependencies.fetch || fetch)('https://ai-gateway.vercel.sh/v1/chat/completions', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: process.env.AI_GATEWAY_MODEL, messages: [{ role: 'system', content: system }, ...prior.reverse(), { role: 'user', content: raw.message }], max_tokens: 450 }), signal: AbortSignal.timeout(15000) });
       if (!response.ok) {
         console.warn('AI Gateway HTTP status:', response.status);
+        res.setHeader('X-Chat-Provider-Status', String(response.status));
         throw new Error('provider');
       }
       answer = (await response.json()).choices?.[0]?.message?.content;
