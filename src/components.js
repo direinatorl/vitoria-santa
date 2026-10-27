@@ -51,6 +51,7 @@ export function header(path) {
     <div class="topbar"><div class="container"><span>Planejar o futuro. Cuidar do presente.</span><a href="tel:${company.phoneHref}">Fale com a Vitória Santa · ${company.phone}</a></div></div>
     <header class="header"><div class="container header-inner">
       <a class="brand" href="/" aria-label="Vitória Santa — início"><img src="/assets/logo.jpg" alt="Vitória Santa Seguros Corretora" width="200" height="100"></a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar modo escuro" aria-pressed="false"><span class="theme-sun" aria-hidden="true">☀</span><span class="theme-moon" aria-hidden="true">☾</span></button>
       <button class="menu-toggle" aria-controls="navigation" aria-expanded="false" aria-label="Abrir menu"><span></span><span></span><span></span></button>
       <nav id="navigation" aria-label="Navegação principal">${navigation.map(([href, label]) => `<a href="${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>
       <a class="button header-cta" href="/contato#solicitar">Solicitar atendimento ${arrow}</a>

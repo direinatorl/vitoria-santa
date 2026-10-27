@@ -21,7 +21,7 @@ function staticHtml(path) {
     .replaceAll(siteUrl + '/assets/', siteUrl + '/public/assets/')
     .replace(/(href|src)="(\/[^"\s]*)"/g, (_, attribute, target) => {
       const url = new URL(target, 'https://local.invalid');
-      const asset = url.pathname.startsWith('/assets/') || ['/styles.css', '/app.js'].includes(url.pathname);
+      const asset = url.pathname.startsWith('/assets/') || ['/styles.css', '/app.js', '/theme.js', '/chat.js'].includes(url.pathname);
       const suffix = asset ? '/public' + url.pathname : url.pathname.replace(/\/$/, '') + '/';
       return `${attribute}="${basePath}${suffix}${url.search}${url.hash}"`;
     })

@@ -2,6 +2,7 @@ import { company, whatsapp } from './config.js';
 import { arrow, escape, icon, wa, faq, photo, steps, finalCta, header, footer } from './components.js';
 import { form } from './forms.js';
 import { homeFaq, consortiumFaq, healthFaq } from './content.js';
+import { chatWidget } from './chat-widget.js';
 export { escape } from './components.js';
 
 function home() {
@@ -45,13 +46,13 @@ function servicePage(service, options) {
     <div><p class="eyebrow"><a href="/">INÍCIO</a> / ${health ? 'PLANOS DE SAÚDE' : 'CONSÓRCIOS'}</p>
       <h1>${health ? 'Cuidado para hoje.<br><em>Tranquilidade<br>para o amanhã.</em>' : 'Suas conquistas<br>começam com<br><em>um bom plano.</em>'}</h1>
       <p>${health ? 'Entenda as opções de planos de saúde e encontre orientação para cuidar de você, da sua família ou da sua empresa.' : 'Imóveis e veículos: conheça o consórcio como alternativa para planejar a aquisição de um bem com orientação em cada etapa.'}</p>
-      <a class="button" href="#solicitar">${health ? 'Solicitar uma cotação' : 'Quero conhecer as opções'} ${arrow}</a>
+      <a class="button" href="#solicitar" data-chat-product="${service}">${health ? 'Solicitar uma cotação' : 'Quero conhecer as opções'} ${arrow}</a>
       <a class="text-link secondary-link" href="${whatsapp(service)}" target="_blank" rel="noopener noreferrer">Prefiro falar no WhatsApp ↗</a>
     </div>
     <div class="service-visual">${photo(health ? 'cuidado' : 'casa', health ? 'Pessoas abraçadas em um momento ao ar livre' : 'Casa contemporânea com jardim e iluminação acolhedora', { eager: true })}<div class="service-visual-label">${icon(health ? 'heart' : 'home')}<span>${health ? 'Cuidado em cada escolha.' : 'Planejamento para conquistar.'}</span></div></div>
   </section>
   <section class="section container choice-section"><div class="section-heading"><div><p class="eyebrow">${health ? 'PARA DIFERENTES MOMENTOS' : 'QUAL É A SUA PRÓXIMA CONQUISTA?'}</p><h2>${health ? 'O cuidado começa<br>pelo que você precisa.' : 'Um objetivo seu.<br>Uma escolha bem orientada.'}</h2></div><p>${health ? 'Modalidades e disponibilidade serão verificadas<br>de acordo com sua região e perfil.' : 'Você escolhe o objetivo. Nós ajudamos<br>a entender as condições do consórcio.'}</p></div>
-    <div class="choice-grid">${choices.map(([value, title, text], index) => `<article><span class="choice-number">0${index + 1}</span><h3>${title}</h3><p>${text}</p><a class="text-link" href="#solicitar" data-prefill-field="${health ? 'plan' : 'asset'}" data-prefill-value="${value}">${health ? 'Consultar possibilidades' : 'Tenho interesse'} ${arrow}</a></article>`).join('')}</div>
+    <div class="choice-grid">${choices.map(([value, title, text], index) => `<article><span class="choice-number">0${index + 1}</span><h3>${title}</h3><p>${text}</p><a class="text-link" href="#solicitar" data-chat-product="${service}" ${value === 'individual-familiar' ? '' : `data-chat-preset="${({ imovel: 'Imóvel', veiculo: 'Carro', empresarial: 'Empresarial' })[value]}"`} data-prefill-field="${health ? 'plan' : 'asset'}" data-prefill-value="${value}">${health ? 'Consultar possibilidades' : 'Tenho interesse'} ${arrow}</a></article>`).join('')}</div>
   </section>
   <section class="comparison-band"><div class="container service-detail"><div><p class="eyebrow">ENTENDA ANTES DE DECIDIR</p><h2>${health ? 'A diferença está<br>nos detalhes.' : 'Como funciona<br>o consórcio?'}</h2><p>${health ? 'Uma boa escolha considera mais do que a mensalidade. Compare as informações do produto específico antes de contratar.' : 'Pessoas de um grupo contribuem para um fundo comum, gerenciado por uma administradora. A contemplação possibilita usar a carta de crédito, conforme as condições contratuais.'}</p><div class="notice">${health ? 'Não há garantia de operadora, rede ou carência nesta página. As condições são confirmadas na proposta e no contrato.' : 'A contemplação ocorre por sorteio ou lance, conforme as regras e os recursos do grupo. Não há promessa de data ou de contemplação imediata.'}</div></div>
     <div class="info-list">${compare.map(([title, text], i) => `<article><span>0${i + 1}</span><div><h3>${title}</h3><p>${text}</p></div></article>`).join('')}</div></div></section>
@@ -86,11 +87,16 @@ function privacy({ staticContact = false } = {}) {
     ['Segurança', 'Aplicamos validação de dados e controles de envio. O ambiente de produção deve utilizar HTTPS, acesso restrito ao banco e cópias de segurança protegidas. Não envie informações sensíveis no campo de mensagem.'],
   ];
   if (staticContact) paragraphs.splice(1, 2,
-    ['Contato pelo WhatsApp', 'Nesta versão do site, o atendimento começa pelos links de WhatsApp, telefone e e-mail. Não há formulário de coleta ou banco de contatos nesta hospedagem. Os dados que você decidir enviar à equipe serão usados para atender ao seu pedido. Não envie diagnósticos ou informações sensíveis na primeira conversa.'],
+    ['Canais de atendimento', 'O site oferece WhatsApp, telefone, e-mail e assistente virtual. O GitHub Pages serve páginas estáticas; quando o registro online estiver configurado, o assistente envia a solicitação à API segura na Vercel, sem gravar dados pessoais no GitHub. Os dados são utilizados para atender ao pedido. Não envie diagnósticos ou documentos nesta etapa.'],
     ['Serviços externos e hospedagem', 'Ao clicar em um canal de contato, você acessa um serviço externo, sujeito a seus próprios termos e políticas. O GitHub Pages hospeda estas páginas e pode tratar dados técnicos de acesso conforme suas políticas. Não utilizamos publicidade, rastreadores ou analytics próprios. As imagens são servidas pela hospedagem.']);
-  if (staticContact) paragraphs.splice(4, 1, ['Cookies e navegação', 'Este site não grava cookies de publicidade nem envia formulários. Os canais externos podem utilizar recursos próprios. Consulte suas políticas ao acessá-los.']);
+  if (staticContact) paragraphs.splice(4, 1, ['Cookies e navegação', 'Este site não grava cookies de publicidade. O tema escolhido é salvo localmente no navegador. O rascunho do assistente fica no armazenamento desta aba por até 30 minutos de inatividade; você pode apagá-lo usando Reiniciar. Os canais externos têm políticas próprias.']);
   if (staticContact) paragraphs[5] = ['Segurança no contato', 'Utilize os canais indicados nesta página para falar com a equipe. Evite enviar informações sensíveis na conversa inicial. As informações de uma eventual proposta devem ser tratadas pelos canais adequados durante o atendimento.'];
-  return `<article class="container legal section"><p class="eyebrow">TRANSPARÊNCIA</p><h1>Política de Privacidade</h1><p class="small">Versão de 21 de outubro de 2026.</p>${paragraphs.map(([title, text]) => `<h2>${title}</h2><p>${text}</p>`).join('')}<a class="text-link" href="/contato">Entrar em contato ${arrow}</a></article>`;
+  paragraphs.push(
+    ['Assistente virtual e consentimento', 'O assistente solicita autorização antes de coletar contato e preferências para consórcio ou cotação de saúde. Podem ser tratados nome, WhatsApp, cidade, estado, orçamento e preferências; para saúde, quantidade e idades dos beneficiários e nome da empresa, quando aplicável. Não solicitamos CPF, CNPJ, documentos ou dados médicos. Antes do envio, você pode revisar e corrigir o pedido. Só exibimos protocolo quando o banco confirma o registro.'],
+    ['Supabase, Vercel e inteligência artificial', 'A integração preparada utiliza Vercel para processar pedidos e Supabase para armazená-los com acesso restrito ao servidor. Quando a IA estiver ativa, dúvidas livres e mensagens anteriores desse atendimento são enviadas ao Vercel AI Gateway e ao provedor do modelo configurado para responder perguntas. O formulário de contato não é enviado ao modelo. Filtros automáticos tentam impedir o envio de documentos e informações médicas, mas não substituem seu cuidado: não inclua dados pessoais na dúvida livre. A interface informa quando a IA ou o registro estão indisponíveis. Estes prestadores podem processar dados fora do Brasil, conforme sua infraestrutura e políticas.'],
+    ['Prazo e exclusão do atendimento virtual', `Pedidos são conservados por até 50 dias; mensagens de dúvidas, por até 7 dias. A limpeza é executada diariamente. Para solicitar exclusão ou revogar consentimento antes disso, escreva para <a href="mailto:${company.email}">${company.email}</a>, informando seu protocolo. A equipe deve confirmar a identidade pelo canal de contato e excluir os registros relacionados, observando obrigações legais. Os limites de envio usam um identificador derivado do IP com chave privada, descartado após a janela de controle de abuso. Nenhuma chave privada é enviada ao navegador.`]
+  );
+  return `<article class="container legal section"><p class="eyebrow">TRANSPARÊNCIA</p><h1>Política de Privacidade</h1><p class="small">Versão de 26 de outubro de 2026.</p>${paragraphs.map(([title, text]) => `<h2>${title}</h2><p>${text}</p>`).join('')}<a class="text-link" href="/contato">Entrar em contato ${arrow}</a></article>`;
 }
 
 export const routes = Object.assign(Object.create(null), {
@@ -114,6 +120,7 @@ export function renderPage(path, siteUrl, options = {}) {
     <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="${canonical}">
     <meta property="og:image" content="${escape(siteUrl)}/assets/${page.image || 'cuidado'}.jpg"><meta property="og:image:alt" content="${page.image === 'casa' ? 'Casa ilustrando aquisição planejada' : 'Pessoas reunidas ao ar livre'}">
     <meta name="theme-color" content="#234b3b"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css?v=1.1.0"><script src="/app.js?v=1.1.0" defer></script>
-    </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}</body></html>`;
+    <meta name="chat-api" content="${escape(options.chatApi ?? process.env.CHAT_API_URL ?? '')}">
+    <script src="/theme.js?v=2"></script><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css?v=2"><script src="/app.js?v=2" defer></script><script type="module" src="/chat.js?v=2"></script>
+    </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}${chatWidget()}</body></html>`;
 }
