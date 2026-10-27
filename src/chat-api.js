@@ -102,7 +102,10 @@ export async function handleChatApi(req, res, dependencies = {}) {
     let answer;
     try {
       const response = await (dependencies.fetch || fetch)('https://ai-gateway.vercel.sh/v1/chat/completions', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: process.env.AI_GATEWAY_MODEL, messages: [{ role: 'system', content: system }, ...prior.reverse(), { role: 'user', content: raw.message }], max_tokens: 450 }), signal: AbortSignal.timeout(15000) });
-      if (!response.ok) throw new Error('provider');
+      if (!response.ok) {
+        console.warn('AI Gateway HTTP status:', response.status);
+        throw new Error('provider');
+      }
       answer = (await response.json()).choices?.[0]?.message?.content;
       if (typeof answer !== 'string' || !answer.trim() || answer.length > 4000) throw new Error('provider');
     } catch { return reply(200, { message: 'A IA está temporariamente indisponível. ' + knowledge[session.product], ai: false }); }
@@ -113,4 +116,3 @@ export async function handleChatApi(req, res, dependencies = {}) {
     return reply(error.status || 503, { message: error.status ? error.message : 'Atendimento temporariamente indisponível. Não confirmamos o registro. Tente novamente ou utilize o WhatsApp.' });
   }
 }
-
