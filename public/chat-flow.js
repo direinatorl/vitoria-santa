@@ -25,7 +25,8 @@ export function fields(product, data = {}) {
 export function validateField(f, input, data = {}) {
   const value = String(input ?? '').trim();
   if (f.optional && ['Pular', 'Ainda não sei'].includes(value)) return { value };
-  if (!value || value.length > 100 || /[<>\x00-\x1f]/.test(value)) return { error: 'Informe uma resposta válida, com até 100 caracteres.' };
+  const maxLength = f.key === 'ages' ? 600 : 100;
+  if (!value || value.length > maxLength || /[<>\x00-\x1f]/.test(value)) return { error: `Informe uma resposta válida, com até ${maxLength} caracteres.` };
   if (f.choices && !f.choices.includes(value) && f.key !== 'budget' && f.key !== 'term') return { error: 'Selecione uma das opções apresentadas.' };
   if (f.key === 'state' && !states.includes(value.toUpperCase())) return { error: 'Informe uma UF brasileira válida, como SP.' };
   if (f.key === 'phone' && (!/^[\d()+.\s-]+$/.test(value) || !/^(?:55)?[1-9]{2}\d{8,9}$/.test(value.replace(/\D/g, '')))) return { error: 'Informe um telefone válido com DDD.' };

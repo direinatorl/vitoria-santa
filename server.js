@@ -77,7 +77,7 @@ const server = http.createServer(async (req, res) => {
     const path = url.pathname === '/' ? '/' : url.pathname.replace(/\/$/, '');
     const exists = Object.hasOwn(routes, path);
     if (exists && path !== url.pathname) return send(res, 308, '', 'text/plain', { Location: path + url.search });
-    send(res, exists ? 200 : 404, req.method === 'HEAD' ? '' : renderPage(path, siteUrl), 'text/html; charset=utf-8');
+    send(res, exists ? 200 : 404, req.method === 'HEAD' ? '' : renderPage(path, siteUrl, { chatApi: origin }), 'text/html; charset=utf-8');
   } catch (error) {
     console.error('Falha no processamento:', error.code || error.name || 'UnknownError');
     if (!res.headersSent) send(res, 500, { message: 'Não foi possível processar o pedido. Tente novamente ou utilize o WhatsApp.' });

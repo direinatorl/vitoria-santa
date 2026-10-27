@@ -76,7 +76,7 @@ node scripts/build.mjs
 node scripts/smoke.mjs
 ```
 
-Os 13 testes verificam também a exportação do Pages e a separação entre atendimento por WhatsApp e formulários persistentes. Iniciam servidores isolados nas portas 3097 e 3098 e usam bancos temporários, removidos ao final. Não utilizam o banco de atendimento. Cobrem páginas, links internos, assets, 404, validação, consentimento, spam, persistência dos três serviços, idempotência, conflitos, SQL parametrizado, proteção de origem, tipo de conteúdo, tamanho do corpo, JSON malformado, aliases locais, URLs canônicas, limite de envios e links de WhatsApp. É necessário permitir conexões de loopback para os testes HTTP.
+Os testes verificam a exportação do Pages, os novos endpoints de chat e a separação entre atendimento por WhatsApp e formulários persistentes. Iniciam servidores isolados nas portas 3097 e 3098 e usam bancos temporários, removidos ao final. Não utilizam o banco de atendimento. Cobrem páginas, links internos, assets, 404, validação, consentimento, spam, persistência dos três serviços, idempotência, conflitos, SQL parametrizado, proteção de origem, tipo de conteúdo, tamanho do corpo, JSON malformado, aliases locais, URLs canônicas, limite de envios e links de WhatsApp. É necessário permitir conexões de loopback para os testes HTTP.
 
 O código é executado diretamente pelo Node. O **build de produção** verifica a sintaxe e prepara `dist/` com código e assets necessários, sem banco, segredos, Git ou testes. O comando `node scripts/smoke.mjs` inicia o artefato na porta 3099, abre uma página e uma imagem e verifica envio/persistência em banco temporário. Execute o build antes do smoke. Também há scripts npm equivalentes: `check`, `build` e `smoke`.
 
@@ -91,3 +91,9 @@ O banco fica em `data/`, ignorado pelo Git e sem rota pública. O servidor não 
 A confirmação do formulário significa **registro no banco**, não envio de e-mail ou recebimento pela equipe. A versão não inclui notificações, CRM, API do WhatsApp, pagamentos, área do cliente ou simulador financeiro. Antes de abrir o site a clientes, defina quem acompanha os pedidos e como serão atendidos.
 
 Consulte [o guia de publicação](docs/PUBLICACAO.md) para persistência, backup, privacidade, infraestrutura e dados comerciais a confirmar, e [o relatório de verificação](docs/VERIFICACAO.md) para os resultados executados. Enviar ao GitHub e tornar o site acessível publicamente são etapas distintas.
+
+## Temas e assistente virtual
+
+Todas as páginas incluem tema claro/escuro, preferência do sistema e escolha persistida. Os CTAs de consórcio e saúde abrem coleta contextual com revisão, correção, consentimento e fallback para WhatsApp. O consórcio é exclusivo Porto Seguro / Porto Bank. Sem tabelas oficiais, não são calculados preços.
+
+O [guia do chatbot](docs/CHATBOT.md) descreve Supabase, API Vercel, segurança, variáveis privadas, IA via Gateway e retenção autorizada (mensagens: 7 dias; pedidos: 50 dias). A integração só confirma protocolo depois do banco; sem configuração, informa indisponibilidade. O build da Vercel é `node scripts/build-vercel.mjs`; o build Node/SQLite original permanece independente.

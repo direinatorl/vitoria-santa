@@ -42,6 +42,7 @@ function start(product, preset) {
     message('assistant', 'Você já tem um atendimento em andamento. Iniciar outro apaga o rascunho desta aba.'); return;
   }
   if (state.product === product && state.mode !== 'welcome') { renderControls(); return; }
+  if (state.product && state.product !== product) reset();
   state.product = product;
   if (preset) state.data[product === 'consorcios' ? 'asset' : 'plan'] = preset;
   message('assistant', product === 'consorcios' ? 'Olá! 👋 Sou o Assistente Virtual Vitória Santa. Vamos conhecer o Consórcio Porto Seguro / Porto Bank para planejar seu imóvel ou carro? A contemplação acontece por sorteio ou lance, sem garantia de data. Prepararemos uma solicitação, não uma simulação de preços.' : 'Olá! 👋 Sou o Assistente Virtual Vitória Santa. Vou ajudar você a entender os planos de saúde e preparar uma solicitação de cotação para a equipe. Preços e disponibilidade serão confirmados por um consultor.');
@@ -58,7 +59,7 @@ function ask() {
   const list = fields(state.product, state.data);
   while (state.step < list.length && state.data[list[state.step].key]) state.step++;
   if (state.step >= list.length) return review();
-  state.mode = 'collect'; message('assistant', currentField().question); renderControls();
+  state.mode = 'collect'; message('assistant', currentField().question); renderControls(); input.focus();
 }
 function review() {
   state.mode = 'review'; editing = null;
@@ -85,7 +86,7 @@ async function request(action, payload) {
   controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 25000);
   try {
     const response = await fetch(`${api}/api/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal });
-    const result = await response.json();
+    const result = await response.json().catch(() => { throw new Error('Não conseguimos confirmar o envio. Tente novamente ou fale pelo WhatsApp.'); });
     if (!response.ok) throw new Error(result.message || 'Atendimento temporariamente indisponível. Tente novamente ou fale pelo WhatsApp.');
     return result;
   } finally { clearTimeout(timer); }
@@ -108,7 +109,7 @@ async function sendRequest() {
     if (!result.id) throw new Error('Não foi possível confirmar o registro. Tente novamente com este mesmo pedido.');
     state.mode = 'done'; message('assistant', `Solicitação registrada com sucesso. Protocolo ${result.id}. A equipe poderá continuar seu atendimento. Você também pode falar diretamente pelo WhatsApp.`);
     state.data = {}; save();
-  } catch (error) { message('assistant', error.name === 'AbortError' ? 'Não conseguimos confirmar o envio. Tente novamente: o identificador deste pedido será mantido para evitar duplicação.' : error.message); }
+  } catch (error) { message('assistant', ['AbortError', 'TypeError'].includes(error.name) ? 'Não conseguimos confirmar o envio. Tente novamente: o identificador deste pedido será mantido para evitar duplicação. O WhatsApp continua disponível.' : error.message); }
   finally { loading(false); renderControls(); }
 }
 async function answerQuestion(text) {
@@ -129,7 +130,9 @@ function renderControls() {
   if (state.mode === 'welcome') return options([['Consórcio Porto Seguro', () => start('consorcios')], ['Planos de saúde', () => start('saude')]]);
   if (state.mode === 'consent') return options([['Autorizo e quero continuar', () => { state.consent = true; state.step = 0; ask(); }], ['Entender sem informar dados', () => { message('assistant', knowledge[state.product]); renderControls(); }], ['Não autorizo', () => { reset(); message('assistant', 'Tudo bem. Nenhum pedido foi enviado. Você pode usar os canais de contato do site.'); }]]);
   if (state.mode === 'collect') {
-    const f = currentField(); input.placeholder = f.question;
+    const f = currentField();
+    if (!f) return review();
+    input.placeholder = f.question;
     input.inputMode = ['credit', 'budget', 'term', 'lives', 'phone'].includes(f.key) ? 'tel' : 'text';
     options([...(f.choices || []).map(value => [value, () => accept(value)]), ['Tenho uma dúvida', showQuestion]]);
     return;
