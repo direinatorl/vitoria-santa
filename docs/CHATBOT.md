@@ -13,7 +13,8 @@ O assistente mantém coleta determinística e validação compartilhada em `publ
 | `SUPABASE_URL` | URL do projeto dedicado `pumofujrevwzbjdmqmrl` |
 | `SUPABASE_SECRET_KEY` | Chave secreta Supabase; aceita chave moderna ou service role legada |
 | `CHAT_SESSION_SECRET` | Segredo aleatório de pelo menos 32 caracteres para assinar sessões e derivar identificadores de abuso |
-| `CHAT_ALLOWED_ORIGINS` | Origens exatas separadas por vírgula; produção: `https://direinatorl.github.io,https://vitoria-santa.vercel.app` |
+| `CHAT_ALLOWED_ORIGINS` | Origens exatas separadas por vírgula; produção: `https://direinatorl.github.io,https://vitoria-santa.vercel.app,https://vitoriasanta.vercel.app` |
+| `AI_GATEWAY_ENABLED` | Somente `true` habilita chamadas ao provedor. Desativado por escolha do proprietário em 27/10/2026 |
 | `AI_GATEWAY_MODEL` | Identificador disponível no catálogo atual do Gateway |
 | `AI_GATEWAY_API_KEY` | Necessária fora da Vercel; na Vercel pode ser usado `VERCEL_OIDC_TOKEN` automático |
 | `CHAT_API_URL` | Origem pública da API incorporada no HTML; única configuração de chat que pode chegar ao navegador |

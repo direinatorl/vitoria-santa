@@ -92,7 +92,7 @@ export async function handleChatApi(req, res, dependencies = {}) {
     if (/\d{4}|@|\b(cpf|cnpj|diagn[oó]stico|doen[cç]a|c[aâ]ncer|diabetes|hiv|medicamento|exame|cirurgia)\b/i.test(raw.message)) return reply(200, { message: 'Para proteger seus dados, não encaminhei esta mensagem à IA. Evite documentos, telefone, e-mail ou informações médicas. Para questões específicas, fale com um consultor.', ai: false });
     // Vercel supplies a fresh OIDC token on each function request at runtime.
     const key = process.env.AI_GATEWAY_API_KEY || (process.env.VERCEL === '1' ? req.headers['x-vercel-oidc-token'] : undefined) || process.env.VERCEL_OIDC_TOKEN;
-    if (!key || !process.env.AI_GATEWAY_MODEL) return reply(200, { message: 'A IA conversacional ainda não está disponível. Orientação geral: ' + knowledge[session.product], ai: false });
+    if (process.env.AI_GATEWAY_ENABLED !== 'true' || !key || !process.env.AI_GATEWAY_MODEL) return reply(200, { message: 'Neste momento, o assistente oferece atendimento guiado e orientações gerais: ' + knowledge[session.product], ai: false });
     const [prior, insurers, approved] = await Promise.all([
       db(`chat_messages?session_id=eq.${session.id}&select=role,content&order=created_at.desc&limit=8`),
       session.product === 'saude' ? db('insurers?product_type=eq.saude&active=eq.true&verified_at=not.is.null&select=name') : [{ name: 'Porto Seguro / Porto Bank' }],

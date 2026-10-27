@@ -60,7 +60,11 @@ test('IA ausente e dados sensíveis têm resposta explícita sem chamada a prove
   const token = signSession('saude');
   delete process.env.AI_GATEWAY_API_KEY; delete process.env.VERCEL_OIDC_TOKEN;
   const response = await call({ token, product: 'saude', action: 'question', message: 'O que é coparticipação?' });
-  assert.equal(response.body.ai, false); assert.match(response.body.message, /ainda não está disponível/);
+  assert.equal(response.body.ai, false); assert.match(response.body.message, /atendimento guiado/);
+  process.env.AI_GATEWAY_API_KEY = 'test-disabled-key'; process.env.AI_GATEWAY_MODEL = 'test-model'; process.env.AI_GATEWAY_ENABLED = 'false';
+  const disabled = await call({ token, product: 'saude', action: 'question', message: 'O que é coparticipação?' }, { db: async path => { assert.equal(path, 'rpc/chat_rate_limit'); return true; } });
+  assert.equal(disabled.body.ai, false);
+  delete process.env.AI_GATEWAY_API_KEY; delete process.env.AI_GATEWAY_MODEL;
   const sensitive = await call({ token, product: 'saude', action: 'question', message: 'Meu CPF é 12345678900' });
   assert.equal(sensitive.body.ai, false); assert.match(sensitive.body.message, /não encaminhei/);
 });
