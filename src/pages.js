@@ -7,9 +7,9 @@ export { escape } from './components.js';
 
 function home() {
   return `<section class="hero container">
-    <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> UM FUTURO MAIS TRANQUILO COMEÇA AQUI</p>
-      <h1>Para seus planos.<br>Para sua vida.<br><em>Conte com a gente.</em></h1>
-      <p>Consórcios para suas conquistas. Planos de saúde para cuidar de quem importa. A Vitória Santa ajuda você a escolher com clareza.</p>
+    <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> VITÓRIA SANTA CORRETORA · SÃO PAULO</p>
+      <h1>Vitória Santa<br><em>Corretora.</em><br>Seus planos, nosso cuidado.</h1>
+      <p>A Vitória Santa Corretora orienta pessoas, famílias e empresas na escolha de consórcios e planos de saúde em São Paulo. Encontre opções para suas conquistas e para cuidar de quem importa.</p>
       <div class="hero-actions"><a class="button" href="/consorcios">Quero um consórcio ${arrow}</a><a class="button button-outline" href="/planos-de-saude#solicitar">Quero um plano de saúde ${arrow}</a></div>
       <div class="hero-note">${icon('check')} Uma conversa próxima. Uma escolha bem orientada.</div>
     </div>
@@ -101,7 +101,7 @@ function privacy({ staticContact = false } = {}) {
 }
 
 export const routes = Object.assign(Object.create(null), {
-  '/': { title: 'Consórcios e planos de saúde', description: 'Consórcios para suas conquistas e planos de saúde para cuidar de quem importa. Conte com a orientação da Vitória Santa Corretora.', render: home },
+  '/': { title: 'Vitória Santa Corretora | Consórcios e Planos de Saúde', description: 'Conheça a Vitória Santa Corretora em São Paulo. Orientação em consórcios e planos de saúde para você, sua família ou empresa.', render: home },
   '/consorcios': { title: 'Consórcios de imóveis e veículos', description: 'Entenda o consórcio, os sorteios, lances e custos. Solicite orientação para planejar sua aquisição com a Vitória Santa.', image: 'casa', render: (options) => servicePage('consorcios', options) },
   '/planos-de-saude': { title: 'Planos de saúde para você e sua empresa', description: 'Consulte opções de planos de saúde para você, sua família e sua empresa. Entenda rede, cobertura e condições com a Vitória Santa.', render: (options) => servicePage('saude', options) },
   '/sobre': { title: 'Conheça a Vitória Santa Corretora', description: 'Atendimento personalizado, orientação na escolha e suporte pós-venda. Conheça a proposta da Vitória Santa Corretora.', render: about },
@@ -117,8 +117,8 @@ export function renderPage(path, siteUrl, options = {}) {
   return `<!doctype html><html lang="pt-BR"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="google-site-verification" content="J4-yrR4iHGHwgJWtvJgBJfJTmx53RGf3AAjVTRM-c_Q">
-    <title>${escape(page.title)} | Vitória Santa</title><meta name="description" content="${escape(page.description)}">
-    <meta property="og:title" content="${escape(page.title)} | Vitória Santa"><meta property="og:description" content="${escape(page.description)}">
+    <title>${escape(page.title)}${path === '/' ? '' : ' | Vitória Santa'}</title><meta name="description" content="${escape(page.description)}">
+    <meta property="og:title" content="${escape(page.title)}${path === '/' ? '' : ' | Vitória Santa'}"><meta property="og:description" content="${escape(page.description)}">
     <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="${canonical}">
     <meta property="og:image" content="${escape(siteUrl)}/assets/${page.image || 'cuidado'}.jpg"><meta property="og:image:alt" content="${page.image === 'casa' ? 'Casa ilustrando aquisição planejada' : 'Pessoas reunidas ao ar livre'}">
     <meta name="theme-color" content="#234b3b"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
