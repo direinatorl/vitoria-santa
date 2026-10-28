@@ -1,5 +1,7 @@
 # Assistente Virtual Vitória Santa
 
+Atualização: o envio de resumos dos novos pedidos usa FormSubmit, conforme o [guia de e-mail](EMAIL.md). A ativação pelo destinatário é necessária. O aviso não altera a confirmação de cadastro nem exige ativar IA.
+
 ## Arquitetura
 
 O servidor `server.js` e `/api/leads` continuam usando SQLite. O build Node em `dist/` preserva esse comportamento. O GitHub Pages continua publicando os HTMLs da raiz. A Vercel serve uma exportação estática própria (`vercel-public/`) e somente as novas funções `/api/chat` e `/api/requests`; SQLite não é colocado em armazenamento efêmero de funções.

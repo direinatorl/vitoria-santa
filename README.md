@@ -88,7 +88,7 @@ O workflow `.github/workflows/verify.yml` executa testes, build e smoke a cada p
 
 O banco fica em `data/`, ignorado pelo Git e sem rota pública. O servidor não oferece consulta pública de leads nem painel administrativo. A equipe deve ter um procedimento de consulta autenticada no servidor com ferramenta SQLite. Não publique ou exporte dados pessoais para a pasta `public/` ou para o repositório.
 
-A confirmação do formulário significa **registro no banco**, não envio de e-mail ou recebimento pela equipe. A versão não inclui notificações, CRM, API do WhatsApp, pagamentos, área do cliente ou simulador financeiro. Antes de abrir o site a clientes, defina quem acompanha os pedidos e como serão atendidos.
+A confirmação do formulário significa **registro no banco**. Os novos pedidos do chatbot têm notificação por FormSubmit, com ativação e resultado documentados em [docs/EMAIL.md](docs/EMAIL.md). Os formulários SQLite originais continuam sem envio de e-mail. A versão não inclui CRM, API do WhatsApp, pagamentos, área do cliente ou simulador financeiro. Defina quem acompanha os pedidos e como serão atendidos.
 
 Consulte [o guia de publicação](docs/PUBLICACAO.md) para persistência, backup, privacidade, infraestrutura e dados comerciais a confirmar, e [o relatório de verificação](docs/VERIFICACAO.md) para os resultados executados. Enviar ao GitHub e tornar o site acessível publicamente são etapas distintas.
 
