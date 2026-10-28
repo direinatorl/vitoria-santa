@@ -116,6 +116,7 @@ export function renderPage(path, siteUrl, options = {}) {
   const canonical = escape(siteUrl + (exists ? path : '/'));
   return `<!doctype html><html lang="pt-BR"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="google-site-verification" content="J4-yrR4iHGHwgJWtvJgBJfJTmx53RGf3AAjVTRM-c_Q">
     <title>${escape(page.title)} | Vitória Santa</title><meta name="description" content="${escape(page.description)}">
     <meta property="og:title" content="${escape(page.title)} | Vitória Santa"><meta property="og:description" content="${escape(page.description)}">
     <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="${canonical}">
