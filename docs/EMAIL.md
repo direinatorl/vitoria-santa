@@ -34,3 +34,11 @@ Não há reenvio cego de falhas: em um timeout o serviço pode ter aceitado o e-
 ## Verificação
 
 `node --test` inclui assinatura inválida/expirada, reserva contra duplicação, destinatário fixo, idempotência no provedor e recusas HTTP/HTML sem falso sucesso. `node scripts/send-email-check.mjs` envia um único teste fictício pelo mesmo remetente, quando executado manualmente com as variáveis privadas disponíveis. Não faz parte do build normal. O teste completo deve criar um pedido identificado como teste e confirmar resultado no banco e no Gmail. Pedidos anteriores não são reenviados automaticamente e esta integração não exporta todo o banco.
+
+### Resultado em 03/11/2026
+
+- Produção em `https://vitoriasanta.vercel.app`, com destinatário fixo `direinato13@gmail.com`.
+- `REQUEST_EMAIL_DOMAIN=resend.dev`: usa `onboarding@resend.dev`, sem criar ou vincular domínio. O domínio próprio da integração antiga foi recusado pelo Resend por falta de verificação e não é usado nesta configuração.
+- Testes fictícios de consórcio (`6e2011a5-50d9-40e1-8224-9f815dd1fee3`) e saúde (`e6589e82-be52-4bb7-b039-62e3bb37631b`) chegaram a `accepted`, com HTTP 200 do Resend e HTTP 202 da função. Isso confirma banco → função → aceitação no provedor, mas não comprova leitura ou entrega na caixa de entrada.
+- Um relatório dos sete pedidos que já existiam foi enviado manualmente pelo conector Gmail, conforme solicitado, com dados extraídos de `request_email_payload`. Esse relatório é separado das notificações automáticas de novos pedidos.
+- Os 21 testes passaram. Os testes de envio cobrem também recusa HTTP em HTML, chave de idempotência e precedência do domínio de teste.
