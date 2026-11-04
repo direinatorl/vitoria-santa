@@ -23,11 +23,12 @@ export async function sendRequestEmail(payload, id, fetchImpl = fetch) {
   let result = {};
   try { result = await response.json(); } catch { /* Non-JSON provider error. */ }
   return { status: response.ok && typeof result.id === 'string' ? 'accepted' : response.ok ? 'unknown' : 'failed',
-    httpStatus: response.status, providerId: result.id || null, errorName: result.name || null };
+    httpStatus: response.status, providerId: result.id || null, errorName: result.name || null,
+    errorMessage: !response.ok && typeof result.message === 'string' ? result.message.replaceAll(apiKey, '[redacted]').slice(0, 512) : null };
 }
 
 export async function handleRequestEmail(req, res, dependencies = {}) {
-  const reply = status => { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify({ ok: status === 202 })); };
+  const reply = (status, notification) => { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify({ ok: status === 202, ...(notification ? { notification } : {}) })); };
   if (req.method !== 'POST') return reply(405);
   if (!process.env.EMAIL_HOOK_SECRET) return reply(503);
   let body;
@@ -49,15 +50,16 @@ export async function handleRequestEmail(req, res, dependencies = {}) {
   try {
     // Atomic claim prevents replay or duplicate requests from sending a second email.
     if (await db('rpc/claim_request_email', 'POST', { p_request: body.id }) !== true) return reply(202);
-    let status = 'unknown', httpStatus = null;
+    let status = 'unknown', httpStatus = null, notification;
     try {
       const payload = await db('rpc/request_email_payload', 'POST', { p_request: body.id });
       const result = await sendRequestEmail(payload, body.id, dependencies.fetch || fetch);
+      notification = result;
       httpStatus = result.httpStatus;
       status = result.status;
       console.info('request-email', JSON.stringify({ requestId: body.id, ...result }));
     } catch { /* Unknown outcome: do not blindly retry an email which may have been sent. */ }
     await db(`request_email_notifications?request_id=eq.${body.id}&status=eq.processing`, 'PATCH', { status, http_status: httpStatus, checked_at: new Date().toISOString() });
-    return reply(202);
+    return reply(202, notification);
   } catch { return reply(503); }
 }

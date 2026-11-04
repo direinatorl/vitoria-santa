@@ -34,4 +34,3 @@ Não há reenvio cego de falhas: em um timeout o serviço pode ter aceitado o e-
 ## Verificação
 
 `node --test` inclui assinatura inválida/expirada, reserva contra duplicação, destinatário fixo, idempotência no provedor e recusas HTTP/HTML sem falso sucesso. `node scripts/send-email-check.mjs` envia um único teste fictício pelo mesmo remetente, quando executado manualmente com as variáveis privadas disponíveis. Não faz parte do build normal. O teste completo deve criar um pedido identificado como teste e confirmar resultado no banco e no Gmail. Pedidos anteriores não são reenviados automaticamente e esta integração não exporta todo o banco.
-
