@@ -4,6 +4,9 @@ import { createHmac } from 'node:crypto';
 import { handleRequestEmail } from '../src/request-email.js';
 
 process.env.EMAIL_HOOK_SECRET = 'test-email-hook-secret';
+process.env.vitoriasanta_RESEND_API_KEY = 'test-resend-key';
+process.env.vitoriasanta_RESEND_EMAIL_DOMAIN = 'vitoriasanta.com.br';
+process.env.REQUEST_EMAIL_DOMAIN = 'resend.dev';
 const id = '05966913-08dc-47fc-a3d1-f1394d794730';
 function signed(timestamp = String(Math.floor(Date.now() / 1000))) {
   return { id, timestamp, signature: createHmac('sha256', process.env.EMAIL_HOOK_SECRET).update(`${id}:${timestamp}`).digest('hex') };
@@ -28,17 +31,21 @@ test('notificação envia apenas uma vez e somente ao destinatário fixo', async
       patch = body;
     },
     fetch: async (url, options) => {
-      assert.equal(url, 'https://formsubmit.co/ajax/atendimento@vitoriasanta.com.br');
-      assert.equal(JSON.parse(options.body).resumo, 'Resumo de teste');
-      sends++; return { ok: true, status: 200, json: async () => ({ success: 'true' }) };
+      assert.equal(url, 'https://api.resend.com/emails');
+      const payload = JSON.parse(options.body);
+      assert.deepEqual(payload.to, ['direinato13@gmail.com']);
+      assert.equal(payload.from, 'Vitória Santa <onboarding@resend.dev>');
+      assert.match(payload.text, /Resumo de teste/);
+      assert.equal(options.headers['Idempotency-Key'], `request-email/${id}`);
+      sends++; return { ok: true, status: 200, json: async () => ({ id: 'provider-test-id' }) };
     },
   };
   assert.equal((await call(signed(), dependencies)).status, 202);
   assert.equal((await call(signed(), dependencies)).status, 202);
   assert.equal(sends, 1); assert.equal(patch.status, 'accepted');
 });
-test('ativação pendente e falha de rede não são marcadas como entrega', async () => {
-  for (const scenario of ['activation', 'timeout']) {
+test('recusa HTTP, HTML de bloqueio e falha de rede não são marcadas como entrega', async () => {
+  for (const scenario of ['refusal', 'html', 'timeout', 'invalid-success']) {
     let recorded;
     const result = await call(signed(), {
       database: async (path, method, body) => {
@@ -46,9 +53,14 @@ test('ativação pendente e falha de rede não são marcadas como entrega', asyn
         if (path === 'rpc/request_email_payload') return { resumo: 'teste' };
         recorded = body;
       },
-      fetch: async () => { if (scenario === 'timeout') throw new Error('network'); return { ok: true, status: 200, json: async () => ({ success: 'false', message: 'This form needs Activation' }) }; },
+      fetch: async () => {
+        if (scenario === 'timeout') throw new Error('network');
+        return { ok: scenario === 'invalid-success', status: scenario === 'invalid-success' ? 200 : 403,
+          json: async () => { if (scenario === 'html') throw new SyntaxError('HTML'); return {}; } };
+      },
     });
     assert.equal(result.status, 202);
-    assert.equal(recorded.status, scenario === 'timeout' ? 'unknown' : 'activation_required');
+    assert.equal(recorded.status, ['timeout', 'invalid-success'].includes(scenario) ? 'unknown' : 'failed');
+    if (scenario === 'html') assert.equal(recorded.http_status, 403);
   }
 });
