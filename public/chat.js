@@ -115,6 +115,7 @@ async function sendRequest() {
 async function answerQuestion(text) {
   if (!state.consent) return;
   if (!text.trim() || text.length > 600) { status.textContent = 'Escreva uma dúvida com até 600 caracteres.'; return; }
+  input.value = '';
   message('user', text); loading(true);
   try {
     await session();
