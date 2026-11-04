@@ -6,7 +6,7 @@ export const requestEmailRecipient = 'direinato13@gmail.com';
 export async function sendRequestEmail(payload, id, fetchImpl = fetch) {
   const apiKey = process.env.vitoriasanta_RESEND_API_KEY || process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error('Resend is not configured');
-  const domain = process.env.vitoriasanta_RESEND_EMAIL_DOMAIN || 'resend.dev';
+  const domain = process.env.REQUEST_EMAIL_DOMAIN || process.env.vitoriasanta_RESEND_EMAIL_DOMAIN || 'resend.dev';
   if (!/^[a-z0-9.-]+$/i.test(domain)) throw new Error('Invalid sending domain');
   const response = await fetchImpl('https://api.resend.com/emails', {
     method: 'POST',

@@ -5,7 +5,8 @@ import { handleRequestEmail } from '../src/request-email.js';
 
 process.env.EMAIL_HOOK_SECRET = 'test-email-hook-secret';
 process.env.vitoriasanta_RESEND_API_KEY = 'test-resend-key';
-process.env.vitoriasanta_RESEND_EMAIL_DOMAIN = 'resend.dev';
+process.env.vitoriasanta_RESEND_EMAIL_DOMAIN = 'vitoriasanta.com.br';
+process.env.REQUEST_EMAIL_DOMAIN = 'resend.dev';
 const id = '05966913-08dc-47fc-a3d1-f1394d794730';
 function signed(timestamp = String(Math.floor(Date.now() / 1000))) {
   return { id, timestamp, signature: createHmac('sha256', process.env.EMAIL_HOOK_SECRET).update(`${id}:${timestamp}`).digest('hex') };

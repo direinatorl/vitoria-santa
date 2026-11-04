@@ -2,7 +2,7 @@
 
 Destino fixo das notificações: **direinato13@gmail.com**, solicitado em 03/11/2026. Provedor: **Resend**, usando a integração já instalada na Vercel. Os contatos públicos da empresa continuam independentes deste destino administrativo.
 
-Não há ativação pelo FormSubmit neste fluxo. A chave privada é `vitoriasanta_RESEND_API_KEY` (ou `RESEND_API_KEY`). O domínio remetente vem de `vitoriasanta_RESEND_EMAIL_DOMAIN`, com `resend.dev` como domínio de teste quando ausente. O domínio de teste só permite o destinatário da própria conta Resend; para outros destinatários é necessário verificar um domínio. Uma resposta `accepted` indica aceitação pelo serviço e não comprova entrega na caixa de entrada.
+Não há ativação pelo FormSubmit neste fluxo. A chave privada é `vitoriasanta_RESEND_API_KEY` (ou `RESEND_API_KEY`). O domínio remetente vem de `REQUEST_EMAIL_DOMAIN`, depois de `vitoriasanta_RESEND_EMAIL_DOMAIN`, com `resend.dev` como padrão quando ausentes. O domínio de teste só permite o destinatário da própria conta Resend; para outros destinatários é necessário verificar um domínio. Uma resposta `accepted` indica aceitação pelo serviço e não comprova entrega na caixa de entrada.
 
 ## Fluxo
 
