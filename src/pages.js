@@ -120,9 +120,9 @@ export function renderPage(path, siteUrl, options = {}) {
     <title>${escape(page.title)}${path === '/' ? '' : ' | Vitória Santa'}</title><meta name="description" content="${escape(page.description)}">
     <meta property="og:title" content="${escape(page.title)}${path === '/' ? '' : ' | Vitória Santa'}"><meta property="og:description" content="${escape(page.description)}">
     <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="${canonical}">
-    <meta property="og:image" content="${escape(siteUrl)}/assets/${page.image || 'cuidado'}.jpg"><meta property="og:image:alt" content="${page.image === 'casa' ? 'Casa ilustrando aquisição planejada' : 'Pessoas reunidas ao ar livre'}">
+    <meta property="og:image" content="${escape(siteUrl)}/assets/logo.jpg"><meta property="og:image:alt" content="Logo original da Vitória Santa Corretora">
     <meta name="theme-color" content="#007eaa"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
     <meta name="chat-api" content="${escape(options.chatApi ?? process.env.CHAT_API_URL ?? '')}">
-    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css?v=2.4"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.2"></script>
+    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.jpg" type="image/jpeg" sizes="200x200"><link rel="stylesheet" href="/styles.css?v=2.4"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.2"></script>
     </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}${chatWidget()}</body></html>`;
 }
