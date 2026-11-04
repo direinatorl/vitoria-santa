@@ -1,5 +1,7 @@
 # Assistente Virtual Vitória Santa
 
+A base de IA direta com OpenAI está descrita em [IA.md](IA.md), com variáveis, limitações e procedimento de ativação. A configuração anterior do Gateway abaixo permanece opcional.
+
 Atualização: o envio de resumos dos novos pedidos usa FormSubmit, conforme o [guia de e-mail](EMAIL.md). A ativação pelo destinatário é necessária. O aviso não altera a confirmação de cadastro nem exige ativar IA.
 
 ## Arquitetura

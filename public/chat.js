@@ -122,7 +122,7 @@ async function answerQuestion(text) {
     message('assistant', result.message);
   } catch {
     message('assistant', 'A IA está indisponível neste momento. Posso continuar com as orientações gerais e a coleta estruturada. ' + knowledge[state.product]);
-  } finally { loading(false); renderControls(); }
+  } finally { loading(false); showQuestion(); }
 }
 function renderControls() {
   delete form.dataset.question;
