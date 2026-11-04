@@ -1,8 +1,9 @@
 // Server-only provider adapter. Never accept credentials, URLs or models from the browser.
 export function aiConfiguration(headers = {}) {
   if (process.env.CHAT_AI_ENABLED === 'true') {
-    if (!process.env.OPENAI_API_KEY) return null;
-    return { provider: 'openai', key: process.env.OPENAI_API_KEY, model: process.env.OPENAI_MODEL || 'gpt-6-luna' };
+    const key = process.env.OPENAI_API_KEY || process.env.OPEN_API_KEY;
+    if (!key) return null;
+    return { provider: 'openai', key, model: process.env.OPENAI_MODEL || 'gpt-6-luna' };
   }
   if (process.env.AI_GATEWAY_ENABLED !== 'true' || !process.env.AI_GATEWAY_MODEL) return null;
   const key = process.env.AI_GATEWAY_API_KEY || (process.env.VERCEL === '1' ? headers['x-vercel-oidc-token'] : undefined) || process.env.VERCEL_OIDC_TOKEN;

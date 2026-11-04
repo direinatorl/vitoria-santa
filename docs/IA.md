@@ -20,6 +20,8 @@ No projeto `vitoria-santa`, ambiente **Production**:
 
 Reimplantar após salvar as variáveis. Não colocar a chave no navegador, HTML, Git, mensagens ou logs. A criação da conta, login e eventual contratação de créditos são etapas do proprietário. A conta precisa ter acesso ao modelo e quota para a chamada. A disponibilidade real deve ser testada após essa configuração.
 
+Compatibilidade: o backend também aceita `OPEN_API_KEY`, nome cadastrado pelo proprietário na Vercel. Se os dois nomes existirem, `OPENAI_API_KEY` tem prioridade. O valor continua privado no servidor.
+
 Sem chave ou sem ativação, o assistente continua com orientação geral e coleta guiada. Não há substituição automática e oculta por outro provedor. A integração anterior via Gateway continua disponível apenas se `AI_GATEWAY_ENABLED=true` e a conexão direta não tiver sido habilitada.
 
 ## Dados e validação

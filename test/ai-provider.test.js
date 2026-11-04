@@ -25,10 +25,14 @@ test('erros, respostas incompletas e recusas não são tratados como resposta v�
 });
 test('ativação direta exige chave privada e não usa o gateway como substituto oculto', () => {
   process.env.CHAT_AI_ENABLED = 'true'; delete process.env.OPENAI_API_KEY;
+  delete process.env.OPEN_API_KEY;
   assert.equal(aiConfiguration(), null);
+  process.env.OPEN_API_KEY = 'test-alias-only';
+  assert.equal(aiConfiguration().key, 'test-alias-only');
   process.env.OPENAI_API_KEY = 'test-only';
   assert.equal(aiConfiguration().provider, 'openai');
-  delete process.env.OPENAI_API_KEY; delete process.env.CHAT_AI_ENABLED;
+  assert.equal(aiConfiguration().key, 'test-only');
+  delete process.env.OPEN_API_KEY; delete process.env.OPENAI_API_KEY; delete process.env.CHAT_AI_ENABLED;
 });
 test('fluxo integrado persiste apenas uma resposta real; falha do provedor continua com orientação geral', async () => {
   process.env.CHAT_SESSION_SECRET = 'test-session-secret-at-least-32-characters';
