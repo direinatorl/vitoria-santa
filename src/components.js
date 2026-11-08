@@ -46,12 +46,20 @@ export function finalCta() {
   return `<section class="container final-cta"><div><p class="eyebrow">SEUS PLANOS, NOSSA ATENÇÃO</p><h2>Vamos encontrar o seu próximo passo?</h2><p>Converse com a Vitória Santa e conte o que você procura.</p></div>${wa()}</section>`;
 }
 
+function healthInsurers() {
+  const insurers = [['bradesco', 'Bradesco Saúde'], ['porto', 'Porto Saúde'], ['sulamerica', 'SulAmérica Saúde'], ['amil', 'Amil']];
+  return `<section class="container health-insurers" aria-labelledby="health-insurers-title">
+    <div class="section-heading"><div><p class="eyebrow">SEGURADORAS E OPERADORAS</p><h2 id="health-insurers-title">Planos de saúde</h2></div></div>
+    <div class="health-insurers-grid">${insurers.map(([file, name]) => `<figure class="health-insurer"><img src="/assets/operadoras/${file}.jpg" alt="Logo ${escape(name)}" width="190" height="110" loading="lazy"><figcaption>${escape(name)}</figcaption></figure>`).join('')}</div>
+  </section>`;
+}
+
 export function locationMap() {
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('Rua Wadih Hatti, 285, Vila Ré, São Paulo - SP, 03666-010')}`;
   return `<section id="localizacao" class="container location-section" aria-labelledby="location-title">
     <div class="section-heading"><div><p class="eyebrow">LOCALIZAÇÃO</p><h2 id="location-title">Onde estamos</h2><p>${escape(company.address)}</p></div><a class="text-link" href="${escape(directions)}" target="_blank" rel="noopener noreferrer">Como chegar ${arrow}</a></div>
     <iframe class="location-map" src="${escape(company.mapEmbedUrl)}" title="Localização da Vitória Santa na Rua Wadih Hatti, 285, Vila Ré, São Paulo" width="1200" height="400" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-  </section>`;
+  </section>${healthInsurers()}`;
 }
 
 export function header(path) {
