@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
 import { consentVersion, validateRequest, knowledge } from '../public/chat-flow.js';
 import { aiConfiguration, generateAnswer } from './ai-provider.js';
+import { answerSiteQuestion } from './site-assistant.js';
 
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -71,6 +72,10 @@ export async function handleChatApi(req, res, dependencies = {}) {
     const bucket = createHmac('sha256', secret()).update(`${Math.floor(Date.now() / 900000)}:${ip}`).digest('hex');
     const allowed = await db('rpc/chat_rate_limit', 'POST', { p_key: bucket });
     if (allowed !== true) { res.setHeader('Retry-After', '900'); throw fail(429, 'Muitas mensagens. Aguarde 15 minutos ou fale pelo WhatsApp.'); }
+    if (req.url.split('?')[0] === '/api/chat' && raw.action === 'site-question') {
+      const { status = 200, ...result } = await answerSiteQuestion(raw, req.headers, db, dependencies.fetch || fetch);
+      return reply(status, result);
+    }
     if (req.url.split('?')[0] === '/api/chat' && raw.action === 'session') {
       if (!['consorcios', 'saude'].includes(raw.product) || raw.consent !== true || raw.consentVersion !== consentVersion) throw fail(422, 'Confirme a finalidade e o consentimento do atendimento.');
       const token = signSession(raw.product); const session = verifySession(token);

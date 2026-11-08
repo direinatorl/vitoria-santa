@@ -124,6 +124,6 @@ export function renderPage(path, siteUrl, options = {}) {
     <meta property="og:image" content="${escape(siteUrl)}/assets/logo.jpg"><meta property="og:image:alt" content="Logo original da Vitória Santa Corretora">
     <meta name="theme-color" content="#007eaa"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
     <meta name="chat-api" content="${escape(options.chatApi ?? process.env.CHAT_API_URL ?? '')}">
-    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.jpg" type="image/jpeg" sizes="200x200"><link rel="stylesheet" href="/styles.css?v=2.5"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.4"></script>
+    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.jpg" type="image/jpeg" sizes="200x200"><link rel="stylesheet" href="/styles.css?v=2.6"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.5"></script>
     </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}${chatWidget()}</body></html>`;
 }

@@ -65,7 +65,7 @@ const server = http.createServer(async (req, res) => {
     if (!['GET', 'HEAD'].includes(req.method)) return send(res, 405, { message: 'Método não permitido.' }, undefined, { Allow: 'GET, HEAD' });
     if (url.pathname === '/robots.txt') return send(res, 200, `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${siteUrl}/sitemap.xml\n`, 'text/plain; charset=utf-8');
     if (url.pathname === '/sitemap.xml') return send(res, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${Object.keys(routes).map(path=>`<url><loc>${escape(siteUrl+path)}</loc></url>`).join('')}</urlset>`, 'application/xml; charset=utf-8');
-    if (['/styles.css','/app.js','/theme.js','/chat.js','/chat-flow.js'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
+    if (['/styles.css','/app.js','/theme.js','/chat.js','/chat-flow.js','/site-help.js'].includes(url.pathname) || url.pathname.startsWith('/assets/')) {
       const file = resolve(publicDir, '.' + decodeURIComponent(url.pathname));
       if (!file.startsWith(resolve(publicDir) + sep)) return send(res, 403, { message: 'Acesso negado.' });
       const types = { css: 'text/css; charset=utf-8', js: 'text/javascript; charset=utf-8', jpg: 'image/jpeg', svg: 'image/svg+xml' };

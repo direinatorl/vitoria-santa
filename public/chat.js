@@ -1,4 +1,5 @@
 import { fields, validateField, consentVersion, knowledge } from './chat-flow.js';
+import { siteHelp, siteTopics, generalHelp, sensitiveQuestion } from './site-help.js';
 
 const launcher = document.querySelector('#chat-launcher');
 const panel = document.querySelector('#vs-chat');
@@ -19,10 +20,17 @@ function save() {
   state.savedAt = Date.now(); state.messages = state.messages.slice(-70);
   try { sessionStorage.setItem(storageKey, JSON.stringify(state)); } catch { /* Continue in memory. */ }
 }
-function message(role, text, persist = true) {
+function message(role, text, persist = true, topic = null) {
   const bubble = document.createElement('p'); bubble.className = `chat-message ${role}`; bubble.textContent = text;
+  if (role === 'assistant' && Object.hasOwn(siteTopics, topic)) {
+    const destination = siteTopics[topic];
+    const home = document.querySelector('nav a[href]').href;
+    const link = document.createElement('a'); link.textContent = destination.label + ' ↗';
+    link.href = new URL(destination.href.slice(1), home).href;
+    link.addEventListener('click', close); bubble.append(document.createElement('br'), link);
+  }
   log.append(bubble); log.scrollTop = log.scrollHeight;
-  if (persist) { state.messages.push({ role, content: text }); save(); }
+  if (persist) { state.messages.push({ role, content: text, topic }); save(); }
 }
 function options(items) {
   choices.replaceChildren();
@@ -37,10 +45,12 @@ function consent() {
   renderControls();
 }
 function start(product, preset) {
+  if (state.mode === 'done') reset();
   if (state.product && state.product !== product && Object.keys(state.data).length) {
     options([['Continuar atendimento atual', renderControls], ['Iniciar novo atendimento', () => { reset(); start(product, preset); }]]);
     message('assistant', 'Você já tem um atendimento em andamento. Iniciar outro apaga o rascunho desta aba.'); return;
   }
+  state.questionOpen = false;
   if (state.product === product && state.mode !== 'welcome') { renderControls(); return; }
   if (state.product && state.product !== product) reset();
   state.product = product;
@@ -113,22 +123,42 @@ async function sendRequest() {
   finally { loading(false); renderControls(); }
 }
 async function answerQuestion(text) {
-  if (!state.consent) return;
   if (!text.trim() || text.length > 600) { status.textContent = 'Escreva uma dúvida com até 600 caracteres.'; return; }
   input.value = '';
+  input.removeAttribute('aria-invalid');
+  // Include only free questions, never the contact fields or the request summary.
+  const history = (state.questionHistory || []).slice(-8);
+  while (history.length && new TextEncoder().encode(JSON.stringify({ message: text, history })).length > 9000) history.shift();
   message('user', text); loading(true);
+  let result;
   try {
-    await session();
-    const result = await request('chat', { action: 'question', token: state.token, product: state.product, message: text });
-    message('assistant', result.message);
+    result = await request('chat', { action: 'site-question', message: text, history });
+    if (typeof result.message !== 'string' || !result.message.trim()) throw new Error('Resposta inválida');
   } catch {
-    message('assistant', 'A IA está indisponível neste momento. Posso continuar com as orientações gerais e a coleta estruturada. ' + knowledge[state.product]);
-  } finally { loading(false); showQuestion(); }
+    const topic = sensitiveQuestion(text) ? null : siteHelp(text);
+    result = { message: topic ? siteTopics[topic].message : 'A conversa com IA está indisponível neste momento. ' + generalHelp, topic };
+    if (sensitiveQuestion(text)) result.message = 'Não envie documentos, telefone, e-mail ou informações médicas na conversa livre. Para questões específicas, fale com um consultor.';
+  }
+  message('assistant', result.message, true, result.topic);
+  if (!sensitiveQuestion(text)) state.questionHistory = [...history, { role: 'user', content: text }, { role: 'assistant', content: result.message }].slice(-8);
+  loading(false); renderControls(); input.focus();
+}
+function productOptions() {
+  return [['Consórcio Porto Seguro', () => start('consorcios')], ['Planos de saúde', () => start('saude')]];
+}
+function questionComposer() {
+  form.hidden = false; form.dataset.question = 'true';
+  input.placeholder = 'Digite sua dúvida sobre o site ou os serviços'; input.inputMode = 'text';
 }
 function renderControls() {
   delete form.dataset.question;
-  save(); form.hidden = state.mode !== 'collect'; input.value = ''; input.disabled = busy;
-  if (state.mode === 'welcome') return options([['Consórcio Porto Seguro', () => start('consorcios')], ['Planos de saúde', () => start('saude')]]);
+  save(); form.hidden = false; input.value = ''; input.disabled = busy; input.removeAttribute('aria-invalid');
+  if (state.mode !== 'collect' || state.questionOpen) questionComposer();
+  if (state.mode === 'welcome') {
+    if (!state.messages.length) message('assistant', 'Olá! Sou o Assistente Virtual Vitória Santa. Pode perguntar sobre o site, localização, planos de saúde ou consórcios, ou escolher uma opção abaixo. As dúvidas podem ser respondidas por IA. Não envie dados pessoais ou médicos na conversa livre.');
+    return options(productOptions());
+  }
+  if (state.questionOpen && state.mode !== 'done') return options([['Continuar meu pedido', () => { state.questionOpen = false; renderControls(); input.focus(); }], ...productOptions()]);
   if (state.mode === 'consent') return options([['Autorizo e quero continuar', () => { state.consent = true; state.step = 0; ask(); }], ['Entender sem informar dados', () => { message('assistant', knowledge[state.product]); renderControls(); }], ['Não autorizo', () => { reset(); message('assistant', 'Tudo bem. Nenhum pedido foi enviado. Você pode usar os canais de contato do site.'); }]]);
   if (state.mode === 'collect') {
     const f = currentField();
@@ -139,11 +169,10 @@ function renderControls() {
     return;
   }
   if (state.mode === 'review') return options([['Confirmar e enviar', sendRequest], ['Corrigir informações', () => options(fields(state.product, state.data).map(f => [f.label, () => { editing = f.key; state.mode = 'collect'; message('assistant', f.question); renderControls(); }]))], ['Tenho uma dúvida', showQuestion]]);
-  options([['Novo atendimento', reset]]);
+  options([['Novo atendimento', reset], ...productOptions()]);
 }
 function showQuestion() {
-  form.hidden = false; input.placeholder = 'Sua dúvida sobre o produto, sem dados pessoais'; input.inputMode = 'text'; input.focus();
-  form.dataset.question = 'true'; options([['Voltar ao pedido', () => { delete form.dataset.question; renderControls(); }]]);
+  state.questionOpen = true; renderControls(); input.focus();
 }
 form.addEventListener('submit', async e => {
   e.preventDefault(); if (busy) return;
@@ -167,7 +196,7 @@ document.querySelectorAll('[data-chat-product]').forEach(link => link.addEventLi
   if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
   e.preventDefault(); open(link.dataset.chatProduct, link.dataset.chatPreset);
 }));
-for (const item of state.messages) message(item.role, item.content, false);
+for (const item of state.messages) message(item.role, item.content, false, item.topic);
 renderControls();
 // Expire both the visible draft and browser storage while the page remains open.
 setInterval(() => {

@@ -4,7 +4,11 @@ O backend oferece conexão direta com a OpenAI pela Responses API. O módulo `sr
 
 ## Comportamento
 
-O visitante escolhe consórcio ou saúde e usa **Tenho uma dúvida** para conversar. Pode fazer perguntas consecutivas e depois **Voltar ao pedido**. O servidor utiliza até oito mensagens da mesma sessão, orientação do produto e conteúdo aprovado do banco. Nome, telefone e campos do formulário não entram automaticamente no contexto da IA.
+O visitante pode digitar dúvidas desde a abertura, antes de escolher um produto. Os botões **Consórcio Porto Seguro** e **Planos de saúde** continuam disponíveis. Durante a coleta, **Tenho uma dúvida** abre a conversa e **Continuar meu pedido** retoma exatamente o campo em andamento. Também é possível perguntar na revisão ou depois de concluir um pedido.
+
+A ação `site-question` responde sobre navegação, localização, contato, corretora e os dois produtos. Destinos conhecidos geram links locais permitidos, compatíveis com Vercel e com o subdiretório do GitHub Pages. Endereço e contatos usam a configuração do site; horários não publicados não são inventados. A IA recebe o mapa do site, as orientações dos dois produtos e o conteúdo aprovado do banco.
+
+A conversa livre usa até oito mensagens de perguntas e respostas da aba, filtradas novamente no servidor. Dados e resumo do pedido não entram nesse histórico. Essa ação não cria sessão de produto, lead nem mensagens no banco; o limite distribuído continua ativo. O consentimento e a sessão de produto permanecem necessários para registrar pedidos. O histórico antigo de perguntas com sessão de produto mantém sua retenção existente.
 
 As instruções orientam respostas em português, sem inventar taxas, preços, operadoras, cobertura ou contemplação. O consórcio permanece exclusivo Porto Seguro / Porto Bank. O modelo responde dúvidas; o pedido e seu protocolo continuam dependendo do fluxo estruturado e da confirmação do Supabase. As instruções reduzem erros, mas não garantem a exatidão de toda resposta: condições comerciais exigem confirmação humana.
 

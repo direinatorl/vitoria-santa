@@ -389,6 +389,7 @@ em,.eyebrow { color:var(--highlight); }
 .chat-log { overflow-y:auto; flex:1; min-height:70px; padding:20px 18px 0; overscroll-behavior:contain; }
 .chat-message { padding:13px 15px; border-radius:12px 12px 12px 3px; background:var(--cream); color:var(--ink); font-size:13px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; margin:0 20px 14px 0; }
 .chat-message.user { margin:0 0 14px 40px; border-radius:12px 12px 3px 12px; background:var(--green); color:#fff; }
+.chat-message a { display:inline-block; margin-top:8px; color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
 .chat-choices { display:flex; flex-wrap:wrap; gap:7px; padding:12px 18px; max-height:190px; overflow-y:auto; }
 .chat-choices button { padding:9px 13px; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:20px; cursor:pointer; font-size:12px; }
 .chat-choices button:hover { border-color:var(--highlight); background:var(--cream); }
