@@ -1,5 +1,5 @@
 import { company, whatsapp } from './config.js';
-import { arrow, escape, icon, wa, faq, photo, steps, finalCta, header, footer } from './components.js';
+import { arrow, escape, icon, wa, faq, photo, steps, finalCta, locationMap, header, footer } from './components.js';
 import { form } from './forms.js';
 import { homeFaq, consortiumFaq, healthFaq } from './content.js';
 import { chatWidget } from './chat-widget.js';
@@ -31,7 +31,7 @@ function home() {
   <section class="about-band"><div class="container about-grid"><div><p class="eyebrow">A VITÓRIA SANTA</p><h2>O primeiro passo<br>é entender <em>você.</em></h2></div><div><p>Cada pessoa tem um momento, uma prioridade e um jeito de planejar o futuro. Por isso, nosso atendimento começa ouvindo o que faz sentido para a sua vida.</p><p>Orientação na escolha e atenção no pós-venda fazem parte do compromisso da Vitória Santa com seus clientes.</p><a class="text-link" href="/sobre">Conheça nossa corretora ${arrow}</a></div></div></section>
   ${steps()}
   <section class="section container faq-layout"><div><p class="eyebrow">INFORMAÇÃO TRAZ TRANQUILIDADE</p><h2>Podemos esclarecer?</h2><p>Respostas para começar<br>a conversa com mais confiança.</p><a class="text-link" href="/contato">Fale com a equipe ${arrow}</a></div>${faq(homeFaq)}</section>
-  ${finalCta()}`;
+  ${finalCta()}${locationMap()}`;
 }
 
 function servicePage(service, options) {
@@ -74,7 +74,7 @@ function contact(options) {
       <article><span class="contact-symbol">${icon('whatsapp')}</span><p class="eyebrow">ATENDIMENTO DIRETO</p><h2>Fale com a gente</h2><a class="contact-primary" href="${whatsapp()}" target="_blank" rel="noopener noreferrer">${company.whatsappLabel} ${arrow}</a><p>WhatsApp</p><a href="tel:${company.phoneHref}">Telefone: ${company.phone}</a></article>
       <article><span class="contact-symbol">@</span><p class="eyebrow">POR E-MAIL</p><h2>Escreva para nós</h2><a class="contact-email" href="mailto:${company.email}">${company.email} ${arrow}</a><p>${options?.staticContact ? 'Conte o que você procura.<br>Vamos orientar o próximo passo.' : 'Ou envie sua solicitação<br>pelo formulário abaixo.'}</p></article>
       <article><span class="contact-symbol">${icon('home')}</span><p class="eyebrow">SÃO PAULO / SP</p><h2>Onde estamos</h2><p>${company.address}</p><a class="text-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}" target="_blank" rel="noopener noreferrer">Ver no mapa ${arrow}</a><p class="small">Confirme a disponibilidade antes de uma visita.</p></article>
-    </section>${form('contato', options)}`;
+    </section>${locationMap()}${form('contato', options)}`;
 }
 
 function privacy({ staticContact = false } = {}) {
@@ -83,15 +83,16 @@ function privacy({ staticContact = false } = {}) {
     ['Dados e finalidade', 'Coletamos nome, telefone e, se informado, e-mail, além das informações de interesse comercial e da mensagem. Usamos esses dados para responder ao pedido e orientar sobre o serviço escolhido, mediante o consentimento solicitado no formulário. Não solicitamos dados médicos, documentos ou diagnósticos.'],
     ['Armazenamento e acesso', 'Os pedidos são registrados no banco privado da aplicação, com data e versão do consentimento. O acesso deve ser restrito à equipe responsável e aos prestadores necessários à hospedagem. Esta versão não envia dados automaticamente a operadoras, administradoras ou sistemas de marketing. Qualquer encaminhamento necessário a uma proposta deve ser informado durante o atendimento.'],
     ['Conservação e seus direitos', 'Os dados devem ser mantidos somente pelo período necessário ao atendimento ou ao cumprimento de obrigação legal. Você pode solicitar confirmação do tratamento, acesso, correção, informações sobre compartilhamento, revogação do consentimento e eliminação, observadas as hipóteses legais de conservação, pelo e-mail acima.'],
-    ['Cookies e serviços externos', 'Este site não utiliza cookies de publicidade, rastreadores ou analytics. Os controles de abuso usam temporariamente o endereço IP em memória por até 15 minutos. Ao acessar WhatsApp, mapas ou redes sociais pelos links, você usa serviços externos com políticas próprias. Imagens e estilos são servidos localmente.'],
+    ['Cookies e serviços externos', 'Este site não utiliza cookies de publicidade, rastreadores ou analytics próprios. Os controles de abuso usam temporariamente o endereço IP em memória por até 15 minutos. O mapa incorporado e os links para WhatsApp, mapas e redes sociais usam serviços externos com políticas próprias. Imagens e estilos são servidos localmente.'],
     ['Segurança', 'Aplicamos validação de dados e controles de envio. O ambiente de produção deve utilizar HTTPS, acesso restrito ao banco e cópias de segurança protegidas. Não envie informações sensíveis no campo de mensagem.'],
   ];
   if (staticContact) paragraphs.splice(1, 2,
     ['Canais de atendimento', 'O site oferece WhatsApp, telefone, e-mail e assistente virtual. O GitHub Pages serve páginas estáticas; quando o registro online estiver configurado, o assistente envia a solicitação à API segura na Vercel, sem gravar dados pessoais no GitHub. Os dados são utilizados para atender ao pedido. Não envie diagnósticos ou documentos nesta etapa.'],
     ['Serviços externos e hospedagem', 'Ao clicar em um canal de contato, você acessa um serviço externo, sujeito a seus próprios termos e políticas. O GitHub Pages hospeda estas páginas e pode tratar dados técnicos de acesso conforme suas políticas. Não utilizamos publicidade, rastreadores ou analytics próprios. As imagens são servidas pela hospedagem.']);
-  if (staticContact) paragraphs.splice(4, 1, ['Cookies e navegação', 'Este site não grava cookies de publicidade. O tema escolhido é salvo localmente no navegador. O rascunho do assistente fica no armazenamento desta aba por até 30 minutos de inatividade; você pode apagá-lo usando Reiniciar. Os canais externos têm políticas próprias.']);
+  if (staticContact) paragraphs.splice(4, 1, ['Cookies e navegação', 'Este site não grava cookies de publicidade próprios. O tema escolhido é salvo localmente no navegador. O rascunho do assistente fica no armazenamento desta aba por até 30 minutos de inatividade; você pode apagá-lo usando Reiniciar. O mapa incorporado e os canais externos têm políticas próprias.']);
   if (staticContact) paragraphs[5] = ['Segurança no contato', 'Utilize os canais indicados nesta página para falar com a equipe. Evite enviar informações sensíveis na conversa inicial. As informações de uma eventual proposta devem ser tratadas pelos canais adequados durante o atendimento.'];
   paragraphs.push(
+    ['Mapa de localização', 'O mapa incorporado é fornecido pelo Google Maps. Ao visualizar essa seção, seu navegador se conecta ao Google, que pode tratar dados de acesso e utilizar cookies conforme suas próprias políticas. O link Como chegar também abre esse serviço externo.'],
     ['Avisos de novos pedidos por e-mail', 'Um resumo do pedido registrado no assistente, incluindo protocolo, nome, telefone e preferências informadas, é encaminhado ao FormSubmit para entrega ao e-mail atendimento@vitoriasanta.com.br. Esse serviço externo processa os dados para realizar a notificação e pode operar fora do Brasil. O banco mantém o pedido mesmo se o aviso falhar. A equipe utiliza essas informações para dar continuidade ao atendimento.'],
     ['Assistente virtual e consentimento', 'O assistente solicita autorização antes de coletar contato e preferências para consórcio ou cotação de saúde. Podem ser tratados nome, WhatsApp, cidade, estado, orçamento e preferências; para saúde, quantidade e idades dos beneficiários e nome da empresa, quando aplicável. Não solicitamos CPF, CNPJ, documentos ou dados médicos. Antes do envio, você pode revisar e corrigir o pedido. Só exibimos protocolo quando o banco confirma o registro.'],
     ['Supabase, Vercel e inteligência artificial', 'A integração utiliza Vercel para processar pedidos e Supabase para armazená-los com acesso restrito ao servidor. Quando a IA estiver ativa, dúvidas livres e até oito mensagens anteriores desse atendimento são enviadas à OpenAI, ou ao Vercel AI Gateway quando este estiver configurado, para responder perguntas. O formulário de contato não é enviado ao modelo. Filtros automáticos tentam impedir o envio de documentos e informações médicas, mas não substituem seu cuidado: não inclua dados pessoais na dúvida livre. A interface informa quando a IA ou o registro estão indisponíveis. Estes prestadores podem processar dados fora do Brasil, conforme sua infraestrutura e políticas.'],
@@ -123,6 +124,6 @@ export function renderPage(path, siteUrl, options = {}) {
     <meta property="og:image" content="${escape(siteUrl)}/assets/logo.jpg"><meta property="og:image:alt" content="Logo original da Vitória Santa Corretora">
     <meta name="theme-color" content="#007eaa"><link rel="canonical" href="${canonical}">${exists ? '' : '<meta name="robots" content="noindex">'}
     <meta name="chat-api" content="${escape(options.chatApi ?? process.env.CHAT_API_URL ?? '')}">
-    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.jpg" type="image/jpeg" sizes="200x200"><link rel="stylesheet" href="/styles.css?v=2.4"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.4"></script>
+    <script src="/theme.js?v=2.1"></script><link rel="icon" href="/assets/favicon.jpg" type="image/jpeg" sizes="200x200"><link rel="stylesheet" href="/styles.css?v=2.5"><script src="/app.js?v=2.1" defer></script><script type="module" src="/chat.js?v=2.4"></script>
     </head><body>${header(path)}<main id="conteudo">${page.render(options)}</main>${footer(service)}${chatWidget()}</body></html>`;
 }

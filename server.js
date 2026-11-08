@@ -38,7 +38,7 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; frame-src https://www.google.com/maps/embed; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
   if (siteUrl.startsWith('https:')) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   try {
     const url = new URL(req.url, origin);

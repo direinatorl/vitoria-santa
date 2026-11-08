@@ -46,6 +46,14 @@ export function finalCta() {
   return `<section class="container final-cta"><div><p class="eyebrow">SEUS PLANOS, NOSSA ATENÇÃO</p><h2>Vamos encontrar o seu próximo passo?</h2><p>Converse com a Vitória Santa e conte o que você procura.</p></div>${wa()}</section>`;
 }
 
+export function locationMap() {
+  const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('Rua Wadih Hatti, 285, Vila Ré, São Paulo - SP, 03666-010')}`;
+  return `<section id="localizacao" class="container location-section" aria-labelledby="location-title">
+    <div class="section-heading"><div><p class="eyebrow">LOCALIZAÇÃO</p><h2 id="location-title">Onde estamos</h2><p>${escape(company.address)}</p></div><a class="text-link" href="${escape(directions)}" target="_blank" rel="noopener noreferrer">Como chegar ${arrow}</a></div>
+    <iframe class="location-map" src="${escape(company.mapEmbedUrl)}" title="Localização da Vitória Santa na Rua Wadih Hatti, 285, Vila Ré, São Paulo" width="1200" height="400" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+  </section>`;
+}
+
 export function header(path) {
   return `<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <div class="topbar"><div class="container"><span>Planejar o futuro. Cuidar do presente.</span><a href="tel:${company.phoneHref}">Fale com a Vitória Santa · ${company.phone}</a></div></div>
